@@ -6,34 +6,85 @@ const bodyStyle = {
   fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
   margin: 0,
   padding: 0,
-  height: '100vh',
-  backgroundColor: '#212121',
+  fontSize: 12,
   color: 'white',
+  background: '#171717',
+  display: 'flex',
+  flexDirection: 'column',
+  height: '100vh',
 };
 
 const actionBarStyle = {
   display: 'flex',
   alignItems: 'center',
-  padding: 15,
-  borderBottom: '1px solid #444',
+  padding: '10px 15px',
+  backgroundColor: '#212121',
 };
 
 const labelStyle = {
-  fontSize: 20,
-  fontWeight: 'bold',
+  fontSize: 15,
   marginRight: 10,
 };
 
+const buttonStyle = {
+  padding: '5px 10px',
+  backgroundColor: '#333',
+  color: 'white',
+  border: 'none',
+  borderRadius: '3px',
+  cursor: 'pointer',
+  marginRight: '10px',
+};
+
+const contentStyle = {
+  display: 'flex',
+  flex: 'auto',
+  overflow: 'hidden',
+};
+
 const logsContainerStyle = {
-  overflowY: 'scroll',
-  width: '70%', // Adjusted for sidebar
-  height: 'calc(100vh - 50px)', // Adjust based on your actual header size
+  overflowY: 'auto',
+  flex: 'auto',
+  padding: '10px',
+  width: '80%', // Adjusted for sidebar
 };
 
 const logEntryStyle = {
   padding: '8px',
-  borderBottom: '1px solid #444',
+  borderRadius: '4px',
+  marginBottom: '10px',
   cursor: 'pointer',
+};
+
+const dateStyle = {
+  color: 'white',
+  backgroundColor: 'rgba(0, 0, 0, 0.2)',
+  padding: '2px 5px',
+  borderRadius: '3px',
+  fontSize: 11,
+  float: 'right',
+};
+
+const messageStyle = {
+};
+
+const errorStyle = {
+  backgroundColor: '#ae3e3e',
+  color: '#ff7373'
+};
+
+const warningStyle = {
+  backgroundColor: '#b0832c',
+  color: '#ffce73'
+};
+
+const noticeStyle = {
+  backgroundColor: '#33a542',
+  color: '#8ae28a'
+};
+
+const lastTwentyMinutesStyle = {
+  color: 'white',
 };
 
 const sidebarStyle = {
@@ -45,8 +96,21 @@ const sidebarStyle = {
 };
 
 const stackTraceStyle = {
-  fontSize: 'smaller',
   color: '#888', // Lighter color to differentiate stack trace
+};
+
+const toFriendlyDate = (date) => {
+  if (!date) {
+    return '';
+  }
+  return date.toLocaleString();
+};
+
+const isLessThanTwentyMinutes = (date) => {
+  if (!date) {
+    return false;
+  }
+  return Date.now() - date.getTime() < 20 * 60 * 1000;
 };
 
 function App() {
@@ -54,12 +118,17 @@ function App() {
   const [selectedEntry, setSelectedEntry] = useState(null);
 
   useEffect(() => {
+    
     ipcRenderer.on('log-update', (event, data) => {
-      setLogData(data);
+      setLogData((prevData) => [...prevData, ...data]);
+    });
+
+    ipcRenderer.on('log-reset', (event, newFilePath) => {
+      setLogData([]);
     });
 
     ipcRenderer.on('selected-file', (event, filePath) => {
-      ipcRenderer.send('watch-log-file', filePath);
+      ipcRenderer.send('watch-another-file', filePath);
     });
 
     return () => {
@@ -74,25 +143,37 @@ function App() {
 
   return (
     <div style={bodyStyle}>
-      <div style={logsContainerStyle}>
-        <div style={actionBarStyle}>
-          <label style={labelStyle}>PHP Error Logs</label>
-          <button onClick={switchFile}>Switch Log File</button>
-        </div>
-        {logData.map((entry, index) => (
-          <div key={index} style={logEntryStyle} className="error-block" onClick={() => setSelectedEntry(entry)}>
-            {entry.error}
-          </div>
-        ))}
+      <div style={actionBarStyle}>
+        <label style={labelStyle}>PHP Error Logs</label>
+        <button onClick={switchFile} style={buttonStyle}>Switch Log File</button>
+        <button onClick={() => setLogData([])} style={buttonStyle}>Clear Logs</button>
       </div>
-      {selectedEntry && (
-        <div style={sidebarStyle}>
-          <div style={{ fontWeight: 'bold' }}>Stack Trace:</div>
-          {selectedEntry.stacktrace.map((line, idx) => (
-            <div key={idx} style={stackTraceStyle}>{line}</div>
+      <div style={contentStyle}>
+        <div style={logsContainerStyle}>
+          {logData.slice().reverse().slice(0, 60).map((entry, index) => (
+            <div key={index}
+              style={{
+                ...logEntryStyle,
+                ...(entry.type === 'error' ? errorStyle :
+                  entry.type === 'warning' ? warningStyle :
+                  entry.type === 'notice' ? noticeStyle : {}),
+                ...(isLessThanTwentyMinutes(entry.date) ? lastTwentyMinutesStyle : {}),
+              }}
+              onClick={() => setSelectedEntry(entry)}>
+              <div style={dateStyle}>{toFriendlyDate(entry.date)}</div>
+              <div style={messageStyle}>{entry.message}</div>
+            </div>
           ))}
         </div>
-      )}
+        {selectedEntry && selectedEntry.stacktrace?.length && (
+          <div style={sidebarStyle}>
+            <div style={{ fontWeight: 'bold' }}>Stack Trace:</div><br />
+            {selectedEntry.stacktrace.map((line, idx) => (
+              <div key={idx} style={stackTraceStyle}>{line}</div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

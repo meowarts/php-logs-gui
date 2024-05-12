@@ -12,8 +12,8 @@ const isDevelopment = process.env.NODE_ENV === 'development';
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
-    width: isDevelopment ? 1400 : 1100,
-    height: isDevelopment ? 800 : 400,
+    width: 620,
+    height: 420,
     show: false,
     webPreferences: {
       nodeIntegration: true,
