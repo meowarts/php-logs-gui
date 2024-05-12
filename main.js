@@ -1,9 +1,11 @@
 'use strict'
 
 // Import parts of electron to use
-const { app, BrowserWindow } = require('electron')
-const path = require('path')
-const url = require('url')
+const { app, BrowserWindow } = require('electron');
+const fs = require('fs');
+const readline = require('readline');
+const path = require('path');
+const url = require('url');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -21,20 +23,72 @@ if (process.env.NODE_ENV !== undefined && process.env.NODE_ENV === 'development'
   dev = true
 }
 
+function watchLogFile() {
+  const logPath = path.join(app.getPath('home'), 'sites', 'ai', 'logs', 'php', 'error.log');
+
+  // If the log file doesn't exist, log an error and return
+  if (!fs.existsSync(logPath)) {
+    console.error('Log file does not exist:', logPath);
+    return;
+  }
+
+  // Function to send last 60 lines from the log file
+  const sendLastLines = () => {
+    const stream = fs.createReadStream(logPath);
+    const rl = readline.createInterface({
+      input: stream,
+      crlfDelay: Infinity
+    });
+
+    let lastLines = [];
+
+    rl.on('line', (line) => {
+      if (lastLines.length >= 60) {
+        lastLines.shift();
+      }
+      lastLines.push(line);
+    });
+
+    rl.on('close', () => {
+      mainWindow.webContents.send('log-update', lastLines.join('\n'));
+    });
+  };
+
+  // Send last 60 lines immediately
+  sendLastLines();
+
+  // Watch for changes in the log file
+  fs.watch(logPath, (eventType, filename) => {
+    if (eventType === 'change') {
+      fs.readFile(logPath, 'utf-8', (err, data) => {
+        if (err) {
+          console.error('Failed to read file:', err);
+          return;
+        }
+        mainWindow.webContents.send('log-update', data);
+      });
+      sendLastLines(); // Optionally call sendLastLines() if you only want to send updates.
+    }
+  });
+}
+
+
 function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 1024,
-    height: 768,
+    width: dev ? 1400 : 1100,
+    height: dev ? 800 : 400,
     show: false,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false
     }
-  })
+  });
+
+  watchLogFile();
 
   // and load the index.html of the app.
-  let indexPath
+  let indexPath;
 
   if (dev && process.argv.indexOf('--noDevServer') === -1) {
     indexPath = url.format({
@@ -60,7 +114,6 @@ function createWindow() {
     // Open the DevTools automatically if developing
     if (dev) {
       const { default: installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-installer')
-
       installExtension(REACT_DEVELOPER_TOOLS)
         .catch(err => console.log('Error loading React DevTools: ', err))
       mainWindow.webContents.openDevTools()
