@@ -2,11 +2,13 @@ import React from 'react'
 import { render } from 'react-dom'
 import App from './components/App'
 
-// Since we are using HtmlWebpackPlugin WITHOUT a template, we should create our own root node in the body element before rendering into it
-let root = document.createElement('div')
+let root = document.createElement('div');
+root.id = 'root';
+document.body.appendChild(root);
 
-root.id = 'root'
-document.body.appendChild(root)
+// We should clear the body with some CSS, like no margin, padding, etc.
+document.body.style.margin = 0;
+document.body.style.padding = 0;
+document.body.style.overflow = 'hidden';
 
-// Now we can render our application into it
-render(<App />, document.getElementById('root'))
+render(<App />, document.getElementById('root'));
