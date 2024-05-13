@@ -1,0 +1,133 @@
+html, body {
+  font-size: 14px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  color: white;
+  background: #171717;
+  height: 100vh;
+
+  .actionBar {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    background-color: #212121;
+
+    .label {
+      font-size: 15px;
+      margin-right: 10px;
+    }
+
+    .button {
+      padding: 5px 10px;
+      background-color: #333;
+      color: white;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      margin-right: 10px;
+
+      &:hover {
+        background-color: #444;
+      }
+    }
+  }
+
+  .content {
+    display: flex;
+    flex: auto;
+    overflow: hidden;
+
+    .logsContainer {
+      overflow-y: auto;
+      flex: auto;
+      padding: 10px;
+      width: 80%;
+
+      .logEntry {
+        border-radius: 4px;
+        margin-bottom: 10px;
+        border: 2px solid #171717;;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        opacity: 0.35;
+
+        &:hover {
+          border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        &.selected {
+          border: 2px solid white;
+          opacity: 1;
+        }
+
+        .content {
+          padding: 8px;
+          border-radius: 14px 14px 0 0;
+          overflow: hidden;
+        }
+
+        .actions {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 2px 2px;
+          background-color: rgba(0, 0, 0, 0.2);
+
+          img {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            opacity: 0.5;
+            filter: grayscale(100%);
+
+            &.active {
+              opacity: 1;
+              filter: grayscale(0%);
+            }
+          }
+
+          .date {
+            color: rgba(255, 255, 255, 0.5);
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-size: 11px;
+          }
+        }
+
+        &.error {
+          background-color: #ae3e3e;
+          color: #ff9494;
+        }
+
+        &.warning {
+          background-color: #b0832c;
+          color: #ffcc00;
+        }
+
+        &.notice {
+          background-color: #33a542;
+          color: #8affa5;
+        }
+      }
+    }
+
+    .sidebar {
+      width: 30%;
+      height: 100vh;
+      overflow-y: scroll;
+      background-color: #333;
+      padding: 10px;
+
+      .stackTrace {
+        color: #888;
+      }
+    }
+  }
+}

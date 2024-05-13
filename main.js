@@ -12,8 +12,8 @@ const isDevelopment = process.env.NODE_ENV === 'development';
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
-    width: 620,
-    height: 420,
+    width: 420,
+    height: 620,
     show: false,
     webPreferences: {
       nodeIntegration: true,
@@ -37,7 +37,7 @@ function createWindow() {
   mainWindow.loadURL(indexPath);
 
   mainWindow.once('ready-to-show', () => {
-    mainWindow.setTitle('PHP Error Log Viewer');
+    mainWindow.setTitle('PHP Error Logs GUI');
     mainWindow.show();
     const logPath = path.join(app.getPath('home'), 'sites', 'ai', 'logs', 'php', 'error.log');
     watchLogFile(mainWindow, logPath);
