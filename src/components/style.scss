@@ -73,7 +73,7 @@ body {
           overflow: hidden;
         }
 
-        .actions {
+        .top-actions, .bottom-actions {
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -94,10 +94,24 @@ body {
           }
 
           .date {
-            color: rgba(255, 255, 255, 0.5);
             padding: 2px 5px;
             border-radius: 3px;
             font-size: 11px;
+          }
+
+          .delete-button {
+            background-color: rgba(255, 0, 0, 0.6);
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 2px 5px;
+            cursor: pointer;
+            font-size: 12px;
+
+            &:hover {
+              background-color: #ff9494;
+              color: #ae3e3e;
+            }
           }
         }
 

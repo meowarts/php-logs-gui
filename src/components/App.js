@@ -63,12 +63,14 @@ function App() {
             <div key={index}
               className={`logEntry ${entry.type} ${selectedEntry === entry ? 'selected' : ''}`} 
                 style={{ opacity: opacityBasedOnDate(entry.date) }}
-                onClick={() => setSelectedEntry(entry)}
-            >
+                onClick={() => setSelectedEntry(entry)}>
+              <div className="top-actions">
+                <div className="date">{toFriendlyDate(entry.date)}</div>
+              </div>
               <div className="content">
                 <div className="message">{entry.message}</div>
               </div>
-              <div className="actions">
+              <div className="bottom-actions">
                 <img src={StackTraceImage} alt="Stack Trace"
                   className={`stackTraceIcon ${!!entry.stacktrace?.length ? 'active' : ''}`}
                 />
@@ -76,7 +78,10 @@ function App() {
                   className={`fileIcon ${!!entry.file ? 'active' : ''}`}
                 />
                 <div style={{ flex: 'auto' }} />
-                <div className="date">{toFriendlyDate(entry.date)}</div>
+                <div className="delete-button" onClick={() => {
+                  setLogData((prevData) => prevData.filter((item) => item !== entry));
+                  setSelectedEntry(null);
+                }}>DELETE</div>
               </div>
             </div>
           ))}

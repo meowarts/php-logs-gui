@@ -77,7 +77,7 @@ body .content .logsContainer .logEntry .content {
   overflow: hidden;
 }
 
-body .content .logsContainer .logEntry .actions {
+body .content .logsContainer .logEntry .top-actions, body .content .logsContainer .logEntry .bottom-actions {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -85,7 +85,7 @@ body .content .logsContainer .logEntry .actions {
   background-color: rgba(0, 0, 0, 0.2);
 }
 
-body .content .logsContainer .logEntry .actions img {
+body .content .logsContainer .logEntry .top-actions img, body .content .logsContainer .logEntry .bottom-actions img {
   width: 20px;
   height: 20px;
   margin-right: 10px;
@@ -93,16 +93,30 @@ body .content .logsContainer .logEntry .actions img {
   filter: grayscale(100%);
 }
 
-body .content .logsContainer .logEntry .actions img.active {
+body .content .logsContainer .logEntry .top-actions img.active, body .content .logsContainer .logEntry .bottom-actions img.active {
   opacity: 1;
   filter: grayscale(0%);
 }
 
-body .content .logsContainer .logEntry .actions .date {
-  color: rgba(255, 255, 255, 0.5);
+body .content .logsContainer .logEntry .top-actions .date, body .content .logsContainer .logEntry .bottom-actions .date {
   padding: 2px 5px;
   border-radius: 3px;
   font-size: 11px;
+}
+
+body .content .logsContainer .logEntry .top-actions .delete-button, body .content .logsContainer .logEntry .bottom-actions .delete-button {
+  background-color: rgba(255, 0, 0, 0.6);
+  color: white;
+  border: none;
+  border-radius: 3px;
+  padding: 2px 5px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+body .content .logsContainer .logEntry .top-actions .delete-button:hover, body .content .logsContainer .logEntry .bottom-actions .delete-button:hover {
+  background-color: #ff9494;
+  color: #ae3e3e;
 }
 
 body .content .logsContainer .logEntry.error {
