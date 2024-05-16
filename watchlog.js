@@ -5,6 +5,7 @@ const { getMainWindow } = require('./windowManager');
 
 let currentWatcher = null;
 let lastProcessedPosition = 0;
+let debounceTimeout = null;
 
 /**
  * Parses a date string in the format '[DD-MMM-YYYY HH:MM:SS UTC]'
@@ -129,10 +130,15 @@ function watchLogFile( mainWindow, logPath, reset = false ) {
   // Send initially the last 60 lines or until one error log is found
   sendLastLines( mainWindow, logPath, false );
 
-  // Watch for new changes
+  // Watch for new changes with debouncing
   currentWatcher = fs.watch( logPath, ( eventType ) => {
     if ( eventType === 'change' ) {
-      sendLastLines( mainWindow, logPath );
+      if ( debounceTimeout ) {
+        clearTimeout( debounceTimeout );
+      }
+      debounceTimeout = setTimeout( () => {
+        sendLastLines( mainWindow, logPath );
+      }, 100 );
     }
   });
 }
