@@ -53,7 +53,7 @@ function App() {
   return (
     <div>
       <div className="actionBar">
-        <label className="label">PHP Error Logs GUI</label>
+        <label className="label">Nyao PHP Errors</label>
         <button onClick={switchFile} className="button">Switch Log File</button>
         <button onClick={() => setLogData([])} className="button">Clear Logs</button>
       </div>

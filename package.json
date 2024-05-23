@@ -1,7 +1,7 @@
 {
   "name": "php-error-logs-gui",
   "version": "1.19.0",
-  "description": "PHP Error Logs GUI",
+  "description": "Nyao PHP Errors",
   "license": "MIT",
   "private": false,
   "author": {

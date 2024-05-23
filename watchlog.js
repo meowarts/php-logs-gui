@@ -1,6 +1,6 @@
 const fs = require('fs');
 const readline = require('readline');
-const { ipcMain } = require('electron');
+const { ipcMain, Notification } = require('electron');
 const { getMainWindow } = require('./windowManager');
 
 let currentWatcher = null;
@@ -99,10 +99,40 @@ function sendLastLines( mainWindow, logPath, sendAll = false ) {
     if ( mainWindow && !mainWindow.isDestroyed() ) {
       if ( logEntries.length > 0 ) {
         mainWindow.webContents.send( 'log-update', logEntries );
+        const latestLog = logEntries[logEntries.length - 1];
+        const { type, message } = latestLog;
+        if (sendAll && (type === 'error' || type === 'warning')) {
+          sendNotification(type, message.split('\n')[0]);
+        }
       }
     }
     lastProcessedPosition = fs.statSync( logPath ).size;
   });
+}
+
+/**
+ * Sends a system notification.
+ * @param {string} logType - The type of log (error, warning, notice).
+ * @param {string} message - The log message.
+ */
+function sendNotification(logType, message) {
+  const notification = new Notification({
+    title: `PHP ${logType.charAt(0).toUpperCase() + logType.slice(1)}`,
+    body: message.slice(0, 250), // MacOS notifications are limited to 256 bytes
+    silent: false
+  });
+
+  notification.on('click', () => {
+    const mainWindow = getMainWindow();
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) {
+        mainWindow.restore();
+      }
+      mainWindow.focus();
+    }
+  });
+
+  notification.show();
 }
 
 /**

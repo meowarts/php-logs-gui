@@ -1,20 +1,50 @@
-// main.js
-
 'use strict';
 
-const { app, BrowserWindow, ipcMain, dialog } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, Notification, Tray, Menu } = require('electron');
 const { setMainWindow, getMainWindow } = require('./windowManager');
 const path = require('path');
 const url = require('url');
 const { watchLogFile } = require('./watchlog');
 
 const isDevelopment = process.env.NODE_ENV === 'development';
+const iconPath = path.join(__dirname, 'src', 'assets', 'icon.png'); // Icon path for both tray and main window
+
+let tray = null;
+
+function createTray(mainWindow) {
+  tray = new Tray(iconPath);
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: 'Show App', 
+      click: () => {
+        mainWindow.show();
+      }
+    },
+    {
+      label: 'Quit', 
+      click: () => {
+        app.quit();
+      }
+    }
+  ]);
+  tray.setToolTip('Nyao PHP Errors');
+  tray.setContextMenu(contextMenu);
+
+  tray.on('click', () => {
+    if (mainWindow.isVisible()) {
+      mainWindow.hide();
+    } else {
+      mainWindow.show();
+    }
+  });
+}
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
     width: 420,
     height: 620,
     show: false,
+    icon: iconPath,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false
@@ -37,7 +67,7 @@ function createWindow() {
   mainWindow.loadURL(indexPath);
 
   mainWindow.once('ready-to-show', () => {
-    mainWindow.setTitle('PHP Error Logs GUI');
+    mainWindow.setTitle('Nyao PHP Errors');
     mainWindow.show();
     const logPath = path.join(app.getPath('home'), 'sites', 'ai', 'logs', 'php', 'error.log');
     watchLogFile(mainWindow, logPath);
@@ -51,9 +81,58 @@ function createWindow() {
   mainWindow.on('closed', () => {
     setMainWindow(null);
   });
+
+  mainWindow.on('resize', () => {
+    if (mainWindow.isMinimized()) {
+      mainWindow.hide();
+    }
+  });
+
+  createTray(mainWindow);
 }
 
-app.whenReady().then(createWindow);
+function showNotification(logType, message) {
+  const notification = new Notification({
+    title: `PHP ${logType.charAt(0).toUpperCase() + logType.slice(1)}`,
+    body: message.slice(0, 250), // MacOS notifications are limited to 256 bytes
+    icon: iconPath, // Custom icon for notification
+    silent: false
+  });
+
+  notification.on('click', () => {
+    const mainWindow = getMainWindow();
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) {
+        mainWindow.restore();
+      }
+      mainWindow.focus();
+    }
+  });
+
+  notification.show();
+}
+
+app.whenReady().then(() => {
+  createWindow();
+
+  // Set application icon for macOS
+  if (process.platform === 'darwin') {
+    app.dock.setIcon(iconPath);
+
+    // Set application menu
+    const menu = Menu.buildFromTemplate([
+      {
+        label: 'Nyao PHP Errors',
+        submenu: [
+          { role: 'about' },
+          { type: 'separator' },
+          { role: 'quit' }
+        ]
+      }
+    ]);
+    Menu.setApplicationMenu(menu);
+  }
+});
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
@@ -80,3 +159,9 @@ ipcMain.on('open-file-dialog', (event) => {
     console.error('Failed to open file dialog:', err);
   });
 });
+
+// Change application name
+app.setName('Nyao PHP Errors');
+app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
+
+module.exports = { createWindow, showNotification };
