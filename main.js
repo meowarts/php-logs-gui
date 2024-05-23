@@ -12,10 +12,12 @@ const iconPath = path.join(__dirname, 'src', 'assets', 'icon.png'); // Icon path
 let tray = null;
 
 function createTray(mainWindow) {
-  tray = new Tray(iconPath);
+  const image = nativeImage.createFromPath(iconPath);
+  tray = new Tray(image.resize({ width: 16, height: 16 }));
   const contextMenu = Menu.buildFromTemplate([
     {
       label: 'Show App', 
+
       click: () => {
         mainWindow.show();
       }
