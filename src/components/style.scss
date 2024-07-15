@@ -49,85 +49,26 @@ body {
       padding: 10px;
       width: 80%;
 
+      h1 {
+        margin: 40px 0;
+      }
+
       .logEntry {
-        border-radius: 4px;
-        margin-bottom: 10px;
-        border: 2px solid #171717;;
+        margin-bottom: 32px;
         cursor: pointer;
         display: flex;
         flex-direction: column;
-        opacity: 0.35;
-
-        &:hover {
-          border: 2px solid rgba(255, 255, 255, 0.2);
-        }
-
-        &.selected {
-          border: 2px solid white;
-          opacity: 1;
-        }
-
-        .content {
-          padding: 8px;
-          border-radius: 14px 14px 0 0;
-          overflow: hidden;
-        }
-
-        .top-actions, .bottom-actions {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 2px 2px;
-          background-color: rgba(0, 0, 0, 0.2);
-
-          img {
-            width: 20px;
-            height: 20px;
-            margin-right: 10px;
-            opacity: 0.5;
-            filter: grayscale(100%);
-
-            &.active {
-              opacity: 1;
-              filter: grayscale(0%);
-            }
-          }
-
-          .date {
-            padding: 2px 5px;
-            border-radius: 3px;
-            font-size: 11px;
-          }
-
-          .delete-button {
-            background-color: rgba(255, 0, 0, 0.6);
-            color: white;
-            border: none;
-            border-radius: 3px;
-            padding: 2px 5px;
-            cursor: pointer;
-            font-size: 12px;
-
-            &:hover {
-              background-color: #ff9494;
-              color: #ae3e3e;
-            }
-          }
-        }
 
         &.error {
-          background-color: #ae3e3e;
-          color: #ff9494;
+          color: #ff615c;
         }
 
         &.warning {
-          background-color: #b0832c;
-          color: #ffcc00;
+          color: #ffc042;
         }
 
         &.notice {
-          background-color: #33a542;
-          color: #8affa5;
+          color: #4aed60;
         }
       }
     }

@@ -3,31 +3,38 @@ import './style.css';
 import React, { useEffect, useState } from 'react';
 const { ipcRenderer } = window.require('electron');
 
-import StackTraceImage from '../assets/stacktrace.svg';
-import FileImage from '../assets/file.svg';
-
 const toFriendlyDate = (date) => {
   if (!date) return '';
   return date.toLocaleString();
 };
 
-const opacityBasedOnDate = (date, fullOpacityDuration = 30, minOpacity = 0.35, totalDuration = 48) => {
-  const diff = (new Date() - date) / 1000 / 60;
-  if (diff < fullOpacityDuration) return 1;
-  const totalDurationInMinutes = totalDuration * 60;
-  if (diff > totalDurationInMinutes) return minOpacity;
-
-  // Calculate the opacity by interpolating between 1 and the minimum opacity over the interval
-  return 1 - (diff - fullOpacityDuration) / (totalDurationInMinutes - fullOpacityDuration) * (1 - minOpacity);
+const isToday = (date) => {
+  const today = new Date();
+  return date.getDate() === today.getDate() &&
+    date.getMonth() === today.getMonth() &&
+    date.getFullYear() === today.getFullYear();
 };
 
+const groupEntriesByDate = (entries) => {
+  const options = { month: 'long', day: 'numeric' };
+  return entries.reduce((groups, entry) => {
+    const date = isToday(entry.date)
+      ? 'Today'
+      : new Date(entry.date).toLocaleDateString('en-US', options);
+    if (!groups[date]) {
+      groups[date] = [];
+    }
+    groups[date].push(entry);
+    return groups;
+  }, {});
+}
 
 function App() {
   const [logData, setLogData] = useState([]);
   const [selectedEntry, setSelectedEntry] = useState(null);
 
   useEffect(() => {
-    
+
     ipcRenderer.on('log-update', (event, data) => {
       setLogData((prevData) => [...prevData, ...data]);
     });
@@ -49,6 +56,7 @@ function App() {
   const switchFile = () => {
     ipcRenderer.send('open-file-dialog');
   };
+  const groupedEntries = groupEntriesByDate(logData.slice().reverse().slice(0, 60));
 
   return (
     <div>
@@ -59,30 +67,17 @@ function App() {
       </div>
       <div className="content">
         <div className="logsContainer">
-          {logData.slice().reverse().slice(0, 60).map((entry, index) => (
-            <div key={index}
-              className={`logEntry ${entry.type} ${selectedEntry === entry ? 'selected' : ''}`} 
-                style={{ opacity: opacityBasedOnDate(entry.date) }}
-                onClick={() => setSelectedEntry(entry)}>
-              <div className="top-actions">
-                <div className="date">{toFriendlyDate(entry.date)}</div>
-              </div>
-              <div className="content">
-                <div className="message">{entry.message}</div>
-              </div>
-              <div className="bottom-actions">
-                <img src={StackTraceImage} alt="Stack Trace"
-                  className={`stackTraceIcon ${!!entry.stacktrace?.length ? 'active' : ''}`}
-                />
-                <img src={FileImage} alt="Open File in VS Code"
-                  className={`fileIcon ${!!entry.file ? 'active' : ''}`}
-                />
-                <div style={{ flex: 'auto' }} />
-                <div className="delete-button" onClick={() => {
-                  setLogData((prevData) => prevData.filter((item) => item !== entry));
-                  setSelectedEntry(null);
-                }}>DELETE</div>
-              </div>
+          {Object.keys(groupedEntries).map((date) => (
+            <div key={date}>
+              <h1>{date}</h1>
+              {groupedEntries[date].map((entry, index) => (
+                <div key={index}
+                  className={`logEntry ${isToday(entry.date) ? entry.type : ''}`}
+                  onClick={() => setSelectedEntry(entry)}
+                >
+                  <div>{toFriendlyDate(entry.date)} - {entry.message}</div>
+                </div>
+              ))}
             </div>
           ))}
         </div>
