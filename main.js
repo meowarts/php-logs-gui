@@ -1,6 +1,6 @@
 'use strict';
 
-const { app, BrowserWindow, ipcMain, dialog, Notification, Tray, Menu } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, Notification, Tray, Menu, nativeImage } = require('electron');
 const { setMainWindow, getMainWindow } = require('./windowManager');
 const path = require('path');
 const url = require('url');
@@ -16,14 +16,14 @@ function createTray(mainWindow) {
   tray = new Tray(image.resize({ width: 16, height: 16 }));
   const contextMenu = Menu.buildFromTemplate([
     {
-      label: 'Show App', 
+      label: 'Show App',
 
       click: () => {
         mainWindow.show();
       }
     },
     {
-      label: 'Quit', 
+      label: 'Quit',
       click: () => {
         app.quit();
       }
@@ -114,6 +114,22 @@ function showNotification(logType, message) {
   notification.show();
 }
 
+function openFileDialog() {
+  dialog.showOpenDialog({
+    properties: ['openFile'],
+    filters: [{ name: 'Log Files', extensions: ['log'] }]
+  }).then(result => {
+    if (!result.canceled && result.filePaths.length > 0) {
+      app.addRecentDocument(result.filePaths[0]);
+
+      const mainWindow = getMainWindow();
+      mainWindow.webContents.send('selected-file', result.filePaths[0]);
+    }
+  }).catch(err => {
+    console.error('Failed to open file dialog:', err);
+  });
+}
+
 app.whenReady().then(() => {
   createWindow();
 
@@ -129,6 +145,26 @@ app.whenReady().then(() => {
           { role: 'about' },
           { type: 'separator' },
           { role: 'quit' }
+        ]
+      },
+      {
+        label: 'File',
+        submenu: [
+          {
+            label: 'Open...',
+            accelerator: 'CmdOrCtrl+O',
+            click: openFileDialog
+          },
+          {
+            label: 'Open Recent',
+            role: 'recentdocuments',
+            submenu:[
+              {
+                label: 'Clear Recently Opened...',
+                role: 'clearrecentdocuments',
+              }
+            ]
+          }
         ]
       }
     ]);
@@ -149,17 +185,11 @@ app.on('activate', () => {
   }
 });
 
-ipcMain.on('open-file-dialog', (event) => {
-  dialog.showOpenDialog({
-    properties: ['openFile'],
-    filters: [{ name: 'Log Files', extensions: ['log'] }]
-  }).then(result => {
-    if (!result.canceled && result.filePaths.length > 0) {
-      event.reply('selected-file', result.filePaths[0]);
-    }
-  }).catch(err => {
-    console.error('Failed to open file dialog:', err);
-  });
+app.on('open-file', (_, path) => {
+  const mainWindow = getMainWindow();
+  if (mainWindow) {
+    mainWindow.webContents.send('selected-file', path);
+  }
 });
 
 // Change application name

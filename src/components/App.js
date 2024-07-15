@@ -53,16 +53,12 @@ function App() {
     };
   }, []);
 
-  const switchFile = () => {
-    ipcRenderer.send('open-file-dialog');
-  };
   const groupedEntries = groupEntriesByDate(logData.slice().reverse().slice(0, 60));
 
   return (
     <div>
       <div className="actionBar">
         <label className="label">Nyao PHP Errors</label>
-        <button onClick={switchFile} className="button">Switch Log File</button>
         <button onClick={() => setLogData([])} className="button">Clear Logs</button>
       </div>
       <div className="content">
