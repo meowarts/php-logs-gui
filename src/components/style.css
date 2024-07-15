@@ -13,6 +13,22 @@ body {
   height: 100vh;
 }
 
+body .window {
+  display: flex;
+  flex-direction: row;
+}
+
+body .window .aside {
+  background-color: #262727;
+  height: 100vh;
+  padding-top: 30px;
+  width: 70px;
+}
+
+body .window .main {
+  flex: 1;
+}
+
 body .actionBar {
   display: flex;
   align-items: center;

@@ -50,7 +50,8 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false
-    }
+    },
+    titleBarStyle: 'hidden',
   });
 
   const indexPath = isDevelopment ?
