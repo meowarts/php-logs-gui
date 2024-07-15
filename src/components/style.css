@@ -11,6 +11,13 @@ body {
   color: white;
   background: #171717;
   height: 100vh;
+  /* Make the whole window draggable. Set no-drag on elements which can click. */
+  -webkit-app-region: drag;
+}
+
+body .button,
+body .clickable {
+  -webkit-app-region: no-drag;
 }
 
 body .window {

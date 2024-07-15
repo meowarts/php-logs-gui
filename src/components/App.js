@@ -72,7 +72,7 @@ function App() {
                 <h1>{date}</h1>
                 {groupedEntries[date].map((entry, index) => (
                   <div key={index}
-                    className={`logEntry ${isToday(entry.date) ? entry.type : ''}`}
+                    className={`logEntry ${isToday(entry.date) ? entry.type : ''} clickable`}
                     onClick={() => setSelectedEntry(entry)}
                   >
                     <div>{toFriendlyDate(entry.date)} - {entry.message}</div>

@@ -12,6 +12,14 @@ body {
   background: #171717;
   height: 100vh;
 
+  /* Make the whole window draggable. Set no-drag on elements which can click. */
+  -webkit-app-region: drag;
+
+  .button,
+  .clickable {
+    -webkit-app-region: no-drag;
+  }
+
   .window {
     display: flex;
     flex-direction: row;
