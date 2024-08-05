@@ -41,6 +41,8 @@ body .actionBar {
   align-items: center;
   padding: 10px 15px;
   background-color: #212121;
+  position: sticky;
+  top: 0;
 }
 
 body .actionBar .label {

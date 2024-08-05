@@ -66,13 +66,13 @@ function App() {
           <button onClick={() => setLogData([])} className="button">Clear Logs</button>
         </div>
         <div className="content">
-          <div className="logsContainer">
+          <div className="logsContainer clickable">
             {Object.keys(groupedEntries).map((date) => (
               <div key={date}>
                 <h1>{date}</h1>
                 {groupedEntries[date].map((entry, index) => (
                   <div key={index}
-                    className={`logEntry ${isToday(entry.date) ? entry.type : ''} clickable`}
+                    className={`logEntry ${isToday(entry.date) ? entry.type : ''}`}
                     onClick={() => setSelectedEntry(entry)}
                   >
                     <div>{toFriendlyDate(entry.date)} - {entry.message}</div>
