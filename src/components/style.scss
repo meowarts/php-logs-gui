@@ -16,23 +16,31 @@ body {
   -webkit-app-region: drag;
 
   .button,
-  .clickable {
+  .clickable,
+  .scrollable {
     -webkit-app-region: no-drag;
   }
 
   .window {
     display: flex;
     flex-direction: row;
+    height: 100vh;
+    overflow: hidden;
 
     .aside {
+      position: sticky;
+      left: 0;
+      top: 0;
+      bottom: 0;
       background-color: #262727;
-      height: 100vh;
       padding-top: 30px;
       width: 70px;
     }
 
     .main {
       flex: 1;
+      display: flex;
+      flex-direction: column;
     }
   }
 
@@ -41,8 +49,6 @@ body {
     align-items: center;
     padding: 10px 15px;
     background-color: #212121;
-    position: sticky;
-    top: 0;
 
     .label {
       font-size: 15px;
@@ -65,15 +71,11 @@ body {
   }
 
   .content {
-    display: flex;
-    flex: auto;
-    overflow: hidden;
+    overflow-y: auto;
 
     .logsContainer {
-      overflow-y: auto;
       flex: auto;
       padding: 10px;
-      width: 80%;
 
       h1 {
         margin: 40px 0;
@@ -98,16 +100,42 @@ body {
         }
       }
     }
+  }
 
-    .sidebar {
-      width: 30%;
-      height: 100vh;
-      overflow-y: scroll;
+  .stackTraceSection {
+    background-color: #333;
+    display: flex;
+    flex-direction: column;
+    height: 30vh;
+    width: 100%;
+
+    .stackTraceBar {
       background-color: #333;
+      display: flex;
+      font-weight: bold;
+      padding: 10px;
+      justify-content: space-between;
+      align-items: center;
+
+      .closeButton {
+        border-radius: 15px;
+        background-color: #171717;
+        cursor: pointer;
+        padding: 3px;
+
+        &:hover {
+          background-color: #444;
+        }
+      }
+    }
+
+    .stackTraceContent {
+      background-color: #000;
+      overflow-y: auto;
       padding: 10px;
 
       .stackTrace {
-        color: #888;
+        color: #fff;
       }
     }
   }

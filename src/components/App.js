@@ -3,6 +3,8 @@ import './style.css';
 import React, { useEffect, useState } from 'react';
 const { ipcRenderer } = window.require('electron');
 
+import CloseImage from '../assets/close.svg';
+
 const toFriendlyDate = (date) => {
   if (!date) return '';
   return date.toLocaleString();
@@ -54,6 +56,7 @@ function App() {
   }, []);
 
   const groupedEntries = groupEntriesByDate(logData.slice().reverse().slice(0, 60));
+  const showStackTrace = selectedEntry && !!selectedEntry.stacktrace?.length;
 
   return (
     <div className="window">
@@ -65,8 +68,8 @@ function App() {
           <label className="label">Nyao PHP Errors</label>
           <button onClick={() => setLogData([])} className="button">Clear Logs</button>
         </div>
-        <div className="content">
-          <div className="logsContainer clickable">
+        <div className="content scrollable" sytle={`height: calc(100vh - 45.5px ${showStackTrace ? '- 30vh' : ''})`}>
+          <div className="logsContainer">
             {Object.keys(groupedEntries).map((date) => (
               <div key={date}>
                 <h1>{date}</h1>
@@ -81,15 +84,20 @@ function App() {
               </div>
             ))}
           </div>
-          {selectedEntry && !!selectedEntry.stacktrace?.length && (
-            <div className="sidebar">
-              <div style={{ fontWeight: 'bold' }}>Stack Trace:</div><br />
+        </div>
+        {showStackTrace && (
+          <div className="stackTraceSection">
+            <div className='stackTraceBar'>
+              <div>Stack Trace:</div>
+              <img src={CloseImage} className='closeButton clickable' onClick={() => setSelectedEntry(null)} width={15} height={15} color="white" />
+            </div>
+            <div className='stackTraceContent scrollable'>
               {selectedEntry.stacktrace.map((line, idx) => (
                 <div key={idx} className="stackTrace">{line}</div>
               ))}
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );

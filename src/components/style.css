@@ -16,24 +16,32 @@ body {
 }
 
 body .button,
-body .clickable {
+body .clickable,
+body .scrollable {
   -webkit-app-region: no-drag;
 }
 
 body .window {
   display: flex;
   flex-direction: row;
+  height: 100vh;
+  overflow: hidden;
 }
 
 body .window .aside {
+  position: sticky;
+  left: 0;
+  top: 0;
+  bottom: 0;
   background-color: #262727;
-  height: 100vh;
   padding-top: 30px;
   width: 70px;
 }
 
 body .window .main {
   flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 body .actionBar {
@@ -41,8 +49,6 @@ body .actionBar {
   align-items: center;
   padding: 10px 15px;
   background-color: #212121;
-  position: sticky;
-  top: 0;
 }
 
 body .actionBar .label {
@@ -65,16 +71,12 @@ body .actionBar .button:hover {
 }
 
 body .content {
-  display: flex;
-  flex: auto;
-  overflow: hidden;
+  overflow-y: auto;
 }
 
 body .content .logsContainer {
-  overflow-y: auto;
   flex: auto;
   padding: 10px;
-  width: 80%;
 }
 
 body .content .logsContainer h1 {
@@ -100,14 +102,40 @@ body .content .logsContainer .logEntry.notice {
   color: #4aed60;
 }
 
-body .content .sidebar {
-  width: 30%;
-  height: 100vh;
-  overflow-y: scroll;
+body .stackTraceSection {
   background-color: #333;
+  display: flex;
+  flex-direction: column;
+  height: 30vh;
+  width: 100%;
+}
+
+body .stackTraceSection .stackTraceBar {
+  background-color: #333;
+  display: flex;
+  font-weight: bold;
+  padding: 10px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+body .stackTraceSection .stackTraceBar .closeButton {
+  border-radius: 15px;
+  background-color: #171717;
+  cursor: pointer;
+  padding: 3px;
+}
+
+body .stackTraceSection .stackTraceBar .closeButton:hover {
+  background-color: #444;
+}
+
+body .stackTraceSection .stackTraceContent {
+  background-color: #000;
+  overflow-y: auto;
   padding: 10px;
 }
 
-body .content .sidebar .stackTrace {
-  color: #888;
+body .stackTraceSection .stackTraceContent .stackTrace {
+  color: #fff;
 }
