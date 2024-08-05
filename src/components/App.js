@@ -62,6 +62,8 @@ function App() {
   }, [originalLogData]);
 
   const filteredData = useCallback((value) => {
+    setSelectedEntry(null);
+
     if (value === '') {
       setLogData(originalLogData);
       return;
