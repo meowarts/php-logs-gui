@@ -51,6 +51,7 @@ function createWindow() {
       contextIsolation: false
     },
     titleBarStyle: 'hidden',
+    trafficLightPosition: { x: 20, y: 23.5 }
   });
 
   const indexPath = isDevelopment ?

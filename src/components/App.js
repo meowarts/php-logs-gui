@@ -1,9 +1,10 @@
 import './style.css';
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 const { ipcRenderer } = window.require('electron');
 
 import CloseImage from '../assets/close.svg';
+import DebouncedSearch from './DebouncedSearch';
 
 const toFriendlyDate = (date) => {
   if (!date) return '';
@@ -32,16 +33,17 @@ const groupEntriesByDate = (entries) => {
 }
 
 function App() {
+  const [originalLogData, setOriginalLogData] = useState([]);
   const [logData, setLogData] = useState([]);
   const [selectedEntry, setSelectedEntry] = useState(null);
 
   useEffect(() => {
-
     ipcRenderer.on('log-update', (event, data) => {
-      setLogData((prevData) => [...prevData, ...data]);
+      setOriginalLogData((prevData) => [...prevData, ...data]);
     });
 
     ipcRenderer.on('log-reset', () => {
+      setOriginalLogData([]);
       setLogData([]);
     });
 
@@ -55,18 +57,37 @@ function App() {
     };
   }, []);
 
+  useEffect(() => {
+    setLogData(originalLogData);
+  }, [originalLogData]);
+
+  const filteredData = useCallback((value) => {
+    if (value === '') {
+      setLogData(originalLogData);
+      return;
+    }
+    const filtered = originalLogData.filter((entry) => {
+      return entry.message.toLowerCase().includes(value.toLowerCase())
+        || entry.stacktrace.join('').toLowerCase().includes(value.toLowerCase());
+    });
+    setLogData(filtered);
+  }, [originalLogData]);
+
   const groupedEntries = groupEntriesByDate(logData.slice().reverse().slice(0, 60));
   const showStackTrace = selectedEntry && !!selectedEntry.stacktrace?.length;
 
   return (
     <div className="window">
-      <div className="aside">
+      {/* <div className="aside"> */}
         {/* Add sidebar content here */}
-      </div>
+      {/* </div> */}
       <div className="main">
         <div className="actionBar">
-          <label className="label">Nyao PHP Errors</label>
-          <button onClick={() => setLogData([])} className="button">Clear Logs</button>
+          <div>
+            <label className="label">Nyao Error Logs</label>
+            <button onClick={() => setLogData([])} className="button">Clear Logs</button>
+          </div>
+          <DebouncedSearch className="searchTextField" placeholder="Search" onSearch={filteredData} />
         </div>
         <div className="content scrollable" sytle={`height: calc(100vh - 45.5px ${showStackTrace ? '- 30vh' : ''})`}>
           <div className="logsContainer">
@@ -74,7 +95,7 @@ function App() {
               <div key={date}>
                 <h1>{date}</h1>
                 {groupedEntries[date].map((entry, index) => (
-                  <div key={index}
+                  <div key={entry.date + entry.type + entry.message + index}
                     className={`logEntry ${isToday(entry.date) ? entry.type : ''}`}
                     onClick={() => setSelectedEntry(entry)}
                   >
