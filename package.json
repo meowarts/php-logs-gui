@@ -1,5 +1,6 @@
 {
   "name": "php-error-logs-gui",
+  "productName": "Nyao Error Logs",
   "version": "1.19.0",
   "description": "Nyao PHP Errors",
   "license": "MIT",

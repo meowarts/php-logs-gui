@@ -17,7 +17,6 @@ function createTray(mainWindow) {
   const contextMenu = Menu.buildFromTemplate([
     {
       label: 'Show App',
-
       click: () => {
         mainWindow.show();
       }
@@ -141,7 +140,7 @@ app.whenReady().then(() => {
     // Set application menu
     const menu = Menu.buildFromTemplate([
       {
-        label: 'Nyao PHP Errors',
+        label: 'Nyao Error Logs',
         submenu: [
           { role: 'about' },
           { type: 'separator' },
