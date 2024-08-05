@@ -87,6 +87,9 @@ function sendLastLines( mainWindow, logPath, sendAll = false ) {
       }
     } else if ( capturingStacktrace ) {
       currentEntry.stacktrace.push( line );
+    } else if ( line.includes( 'Stack trace:' ) ) {
+      capturingStacktrace = true;
+      currentEntry.stacktrace.push( line );
     } else {
       currentEntry.message += '\n' + line;
     }

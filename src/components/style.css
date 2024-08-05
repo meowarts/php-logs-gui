@@ -121,7 +121,7 @@ body .stackTraceSection .stackTraceBar {
 
 body .stackTraceSection .stackTraceBar .closeButton {
   border-radius: 15px;
-  background-color: #171717;
+  background-color: #1A1A1A;
   cursor: pointer;
   padding: 3px;
 }
@@ -131,7 +131,7 @@ body .stackTraceSection .stackTraceBar .closeButton:hover {
 }
 
 body .stackTraceSection .stackTraceContent {
-  background-color: #000;
+  background-color: #1A1A1A;
   overflow-y: auto;
   padding: 10px;
 }
