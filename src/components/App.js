@@ -5,32 +5,7 @@ const { ipcRenderer } = window.require('electron');
 
 import CloseImage from '../assets/close.svg';
 import DebouncedSearch from './DebouncedSearch';
-
-const toFriendlyDate = (date) => {
-  if (!date) return '';
-  return date.toLocaleString();
-};
-
-const isToday = (date) => {
-  const today = new Date();
-  return date.getDate() === today.getDate() &&
-    date.getMonth() === today.getMonth() &&
-    date.getFullYear() === today.getFullYear();
-};
-
-const groupEntriesByDate = (entries) => {
-  const options = { month: 'long', day: 'numeric' };
-  return entries.reduce((groups, entry) => {
-    const date = isToday(entry.date)
-      ? 'Today'
-      : new Date(entry.date).toLocaleDateString('en-US', options);
-    if (!groups[date]) {
-      groups[date] = [];
-    }
-    groups[date].push(entry);
-    return groups;
-  }, {});
-}
+import { isToday, toFriendlyDate } from '../utils/date';
 
 function App() {
   const [originalLogData, setOriginalLogData] = useState([]);
@@ -45,6 +20,7 @@ function App() {
     ipcRenderer.on('log-reset', () => {
       setOriginalLogData([]);
       setLogData([]);
+      setSelectedEntry(null);
     });
 
     ipcRenderer.on('selected-file', (event, filePath) => {
@@ -75,19 +51,36 @@ function App() {
     setLogData(filtered);
   }, [originalLogData]);
 
+  const groupEntriesByDate = useCallback((entries) => {
+    return entries.reduce((groups, entry) => {
+      const date = isToday(entry.date)
+        ? 'Today'
+        : new Date(entry.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+      if (!groups[date]) {
+        groups[date] = [];
+      }
+      groups[date].push(entry);
+      return groups;
+    }, {});
+  }, []);
+
+  const clearLogs = useCallback(() => {
+    setOriginalLogData([]);
+    setLogData([]);
+    setSelectedEntry(null);
+  }, []);
+
   const groupedEntries = groupEntriesByDate(logData.slice().reverse().slice(0, 60));
   const showStackTrace = selectedEntry && !!selectedEntry.stacktrace?.length;
 
   return (
     <div className="window">
-      {/* <div className="aside"> */}
-        {/* Add sidebar content here */}
-      {/* </div> */}
+      {/* <div className="aside"> Add sidebar content here </div> */}
       <div className="main">
         <div className="actionBar">
           <div>
             <label className="label">Nyao Error Logs</label>
-            <button onClick={() => setLogData([])} className="button">Clear Logs</button>
+            <button onClick={clearLogs} className="button">Clear Logs</button>
           </div>
           <DebouncedSearch className="searchTextField" placeholder="Search" onSearch={filteredData} />
         </div>

@@ -1,6 +1,6 @@
 'use strict';
 
-const { app, BrowserWindow, ipcMain, dialog, Notification, Tray, Menu, nativeImage } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, Tray, Menu, nativeImage } = require('electron');
 const { setMainWindow, getMainWindow } = require('./windowManager');
 const path = require('path');
 const url = require('url');
@@ -69,11 +69,11 @@ function createWindow() {
 
   mainWindow.loadURL(indexPath);
 
-  mainWindow.once('ready-to-show', () => {
+  mainWindow.once('ready-to-show', async () => {
     mainWindow.setTitle('Nyao PHP Errors');
     mainWindow.show();
     const logPath = path.join(app.getPath('home'), 'sites', 'ai', 'logs', 'php', 'error.log');
-    watchLogFile(mainWindow, logPath);
+    await watchLogFile(mainWindow, logPath);
     if (isDevelopment) {
       mainWindow.webContents.openDevTools();
     }
@@ -92,27 +92,6 @@ function createWindow() {
   });
 
   createTray(mainWindow);
-}
-
-function showNotification(logType, message) {
-  const notification = new Notification({
-    title: `PHP ${logType.charAt(0).toUpperCase() + logType.slice(1)}`,
-    body: message.slice(0, 250), // MacOS notifications are limited to 256 bytes
-    icon: iconPath, // Custom icon for notification
-    silent: false
-  });
-
-  notification.on('click', () => {
-    const mainWindow = getMainWindow();
-    if (mainWindow) {
-      if (mainWindow.isMinimized()) {
-        mainWindow.restore();
-      }
-      mainWindow.focus();
-    }
-  });
-
-  notification.show();
 }
 
 function openFileDialog() {
@@ -197,4 +176,13 @@ app.on('open-file', (_, path) => {
 app.setName('Nyao PHP Errors');
 app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
 
-module.exports = { createWindow, showNotification };
+ipcMain.on( 'watch-another-file', async ( event, logPath ) => {
+  const mainWindow = getMainWindow();
+  if ( mainWindow && !mainWindow.isDestroyed() ) {
+    await watchLogFile( mainWindow, logPath, true );
+  } else {
+    console.log( 'MainWindow is not available or has been destroyed.' );
+  }
+});
+
+module.exports = { createWindow };
