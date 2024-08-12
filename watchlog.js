@@ -1,9 +1,21 @@
 const fs = require('fs');
-const { sendLastLines } = require('./sendLastLines');
+const { parseLogFile } = require('./parseLogFile');
+const { sendNotification } = require('./sendNotification');
 
 let currentWatcher = null;
-let lastProcessedPosition = 0;
+let startProcessPosition = 0;
 let debounceTimeout = null;
+
+/**
+ * Call the log update event on the main window.
+ * @param {object} mainWindow - The main window object.
+ * @param {Array} logEntries - The log entries to send.
+ */
+function callLogUpdate( mainWindow, logEntries ) {
+  if ( mainWindow && !mainWindow.isDestroyed() && logEntries.length > 0 ) {
+    mainWindow.webContents.send( 'log-update', logEntries );
+  }
+}
 
 /**
  * Watches the log file for changes and processes new entries.
@@ -18,7 +30,7 @@ async function watchLogFile( mainWindow, logPath, reset = false ) {
   }
 
   if ( reset ) {
-    lastProcessedPosition = 0;
+    startProcessPosition = 0;
     mainWindow.webContents.send( 'log-reset' );
   }
 
@@ -27,14 +39,20 @@ async function watchLogFile( mainWindow, logPath, reset = false ) {
     currentWatcher.close();
   }
 
-  // Send initially the last 60 lines or until one error log is found
+  // Send initially the logs
   try {
-    lastProcessedPosition = await sendLastLines(mainWindow, logPath, false, lastProcessedPosition);
+    const { logEntries, lastProcessedPosition } = await parseLogFile({
+      logPath,
+      streamOptions: { start: startProcessPosition },
+    });
+    startProcessPosition = lastProcessedPosition;
+    callLogUpdate(mainWindow, logEntries);
   } catch (error) {
     console.error('Error processing log file:', error);
   }
 
-  // Watch for new changes with debouncing
+  // Watch for new changes with debouncing and send notifications for
+  // new entries if the window is minimized
   currentWatcher = fs.watch( logPath, ( eventType ) => {
     if ( eventType === 'change' ) {
       if ( debounceTimeout ) {
@@ -42,7 +60,16 @@ async function watchLogFile( mainWindow, logPath, reset = false ) {
       }
       debounceTimeout = setTimeout(async () => {
         try {
-          lastProcessedPosition = await sendLastLines(mainWindow, logPath, false, lastProcessedPosition);
+          const { logEntries, lastProcessedPosition } = await parseLogFile({
+            logPath,
+            streamOptions: { start: startProcessPosition },
+          });
+          startProcessPosition = lastProcessedPosition;
+          callLogUpdate(mainWindow, logEntries);
+
+          if (mainWindow.isMinimized()) {
+            sendNotification(logEntries[logEntries.length - 1]);
+          }
         } catch (error) {
           console.error('Error processing log file:', error);
         }

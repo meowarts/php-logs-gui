@@ -1,6 +1,5 @@
 const fs = require('fs');
 const readline = require('readline');
-const { sendNotification } = require('./sendNotification');
 
 /**
  * Parses a date string in the format '[DD-MMM-YYYY HH:MM:SS UTC]'
@@ -35,17 +34,15 @@ function getLogType( message ) {
   }
   return 'notice';
 }
+
 /**
- * Sends the last lines of the log file to the main window.
- * @param {object} mainWindow - The main window object.
+ * Parses the log file and extracts log entries.
  * @param {string} logPath - The path to the log file.
- * @param {boolean} sendAll - Whether to send all lines or not.
- * @param {number} lastProcessedPosition - The last processed position in the log file.
- * @returns {Promise<number>} - A promise that resolves with the new last processed position.
+ * @param {object} streamOptions - The streamOptions to pass to fs.createReadStream.
+ * @returns {Promise<object>} - A promise that resolves with the log entries and the last processed position.
  */
-function sendLastLines(mainWindow, logPath, sendAll = false, lastProcessedPosition = 0) {
+function parseLogFile({ logPath, streamOptions = {} }) {
   return new Promise((resolve, reject) => {
-    const streamOptions = sendAll ? {} : { start: lastProcessedPosition };
     const stream = fs.createReadStream(logPath, streamOptions);
     const rl = readline.createInterface({ input: stream, crlfDelay: Infinity });
     const logEntries = [];
@@ -96,18 +93,11 @@ function sendLastLines(mainWindow, logPath, sendAll = false, lastProcessedPositi
       if ( currentEntry.message || currentEntry.stacktrace.length > 0 ) {
         logEntries.push( currentEntry );
       }
-      if ( mainWindow && !mainWindow.isDestroyed() ) {
-        if ( logEntries.length > 0 ) {
-          mainWindow.webContents.send( 'log-update', logEntries );
-          const latestLog = logEntries[logEntries.length - 1];
-          const { type, message } = latestLog;
-          if (sendAll && (type === 'error' || type === 'warning')) {
-            sendNotification(type, message.split('\n')[0]);
-          }
-        }
-      }
-      const newLastProcessedPosition = fs.statSync( logPath ).size;
-      resolve(newLastProcessedPosition);
+      const lastProcessedPosition = fs.statSync( logPath ).size;
+      resolve({
+        logEntries,
+        lastProcessedPosition,
+      });
     });
 
     stream.on('error', (error) => {
@@ -116,4 +106,4 @@ function sendLastLines(mainWindow, logPath, sendAll = false, lastProcessedPositi
   });
 }
 
-module.exports = { sendLastLines };
+module.exports = { parseLogFile };
