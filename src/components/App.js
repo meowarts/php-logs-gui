@@ -34,6 +34,9 @@ function App() {
 
     ipcRenderer.on('selected-log', (event, entry) => {
       setSelectedEntry(entry);
+      if (scrollRef.current) {
+        scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      }
     });
 
     const handleKeyDown = (event) => {
@@ -46,6 +49,7 @@ function App() {
     return () => {
       ipcRenderer.removeAllListeners('log-update');
       ipcRenderer.removeAllListeners('selected-file');
+      ipcRenderer.removeAllListeners('selected-log');
       ipcRenderer.removeAllListeners('log-reset');
       window.removeEventListener('keydown', handleKeyDown);
     };
