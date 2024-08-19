@@ -88,6 +88,10 @@ function App() {
     setSelectedEntry(null);
   }, []);
 
+  const isSameEntry = useCallback((entry1, entry2) => {
+    return !!entry1 && !!entry2 && (entry1.date + entry1.type + entry1.message) === (entry2.date + entry2.type + entry2.message);
+  }, []);
+
   const showStackTrace = selectedEntry && !!selectedEntry.stacktrace?.length;
 
   return (
@@ -105,7 +109,7 @@ function App() {
           <div className="logsContainer">
             {logData.map((entry, index) => (
               <div key={entry.date + entry.type + entry.message + index}
-                className={`logEntry ${isToday(entry.date) ? entry.type : ''}`}
+                className={`logEntry ${isToday(entry.date) ? entry.type : ''} ${isSameEntry(selectedEntry, entry) ? 'selected' : ''}`}
                 onClick={(event) => {
                   setSelectedEntry(entry);
                   const { bottom } = event.currentTarget.getBoundingClientRect();

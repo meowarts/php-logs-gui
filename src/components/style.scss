@@ -104,34 +104,55 @@ body {
   }
 
   .content {
+    background-color: #262727;
     overflow-y: auto;
     overflow-x: hidden;
     width: 100vw;
 
     .logsContainer {
       flex: auto;
-      padding: 10px 25px;
+      padding: 10px 16px;
 
       h1 {
         margin: 40px 0;
       }
 
       .logEntry {
-        margin-bottom: 16px;
+        background-color: #212121;
+        border: 2px solid #303031;
+        border-radius: 10px;
         cursor: pointer;
         display: flex;
         flex-direction: column;
+        margin-bottom: 16px;
+        padding: 10px;
+
+        &.selected {
+          border-color: #fff;
+        }
 
         &.error {
           color: #ff615c;
+
+          &.selected {
+            border-color: #ff615c;
+          }
         }
 
         &.warning {
           color: #ffc042;
+
+          &.selected {
+            border-color: #ffc042;
+          }
         }
 
         &.notice {
           color: #4aed60;
+
+          &.selected {
+            border-color: #4aed60;
+          }
         }
       }
     }

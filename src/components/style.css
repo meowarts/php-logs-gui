@@ -104,6 +104,7 @@ body .actionBar .search .closeButton.hidden {
 }
 
 body .content {
+  background-color: #262727;
   overflow-y: auto;
   overflow-x: hidden;
   width: 100vw;
@@ -111,7 +112,7 @@ body .content {
 
 body .content .logsContainer {
   flex: auto;
-  padding: 10px 25px;
+  padding: 10px 16px;
 }
 
 body .content .logsContainer h1 {
@@ -119,22 +120,42 @@ body .content .logsContainer h1 {
 }
 
 body .content .logsContainer .logEntry {
-  margin-bottom: 16px;
+  background-color: #212121;
+  border: 2px solid #303031;
+  border-radius: 10px;
   cursor: pointer;
   display: flex;
   flex-direction: column;
+  margin-bottom: 16px;
+  padding: 10px;
+}
+
+body .content .logsContainer .logEntry.selected {
+  border-color: #fff;
 }
 
 body .content .logsContainer .logEntry.error {
   color: #ff615c;
 }
 
+body .content .logsContainer .logEntry.error.selected {
+  border-color: #ff615c;
+}
+
 body .content .logsContainer .logEntry.warning {
   color: #ffc042;
 }
 
+body .content .logsContainer .logEntry.warning.selected {
+  border-color: #ffc042;
+}
+
 body .content .logsContainer .logEntry.notice {
   color: #4aed60;
+}
+
+body .content .logsContainer .logEntry.notice.selected {
+  border-color: #4aed60;
 }
 
 body .stackTraceSection {
