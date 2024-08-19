@@ -36,6 +36,24 @@ function getLogType( message ) {
 }
 
 /**
+ * Parses a stack trace line.
+ * @param {string} stacktrace
+ * @returns {object} - The parsed stack trace line, with 'file' and 'detail' properties.
+ */
+function parseStacktrace( stacktrace ) {
+  const match = stacktrace.match(/^(#\d+)\s+(.*?)\((\d+)\):\s+(.*)$/);
+  return match
+    ? {
+        file: `${match[1]} ${match[2]}(${match[3]})`,
+        detail: match[4],
+      }
+    : {
+        file: null,
+        detail: stacktrace.trim(),
+      };
+}
+
+/**
  * Parses the log file and extracts log entries.
  * @param {string} logPath - The path to the log file.
  * @param {object} streamOptions - The streamOptions to pass to fs.createReadStream.
@@ -63,7 +81,7 @@ function parseLogFile({ logPath, streamOptions = {} }) {
         if ( capturingStacktrace ) {
           if ( line.includes( 'PHP ' ) && line.match( /PHP\s+\d+\./ ) ) {
             // Stack trace line
-            currentEntry.stacktrace.push( line );
+            currentEntry.stacktrace.push( parseStacktrace(line) );
           } else {
             // New log entry, end of stack trace
             capturingStacktrace = false;
@@ -72,7 +90,6 @@ function parseLogFile({ logPath, streamOptions = {} }) {
           }
         } else if ( line.includes( 'PHP Stack trace:' ) ) {
           capturingStacktrace = true;
-          currentEntry.stacktrace.push( line );
         } else {
           if ( currentEntry.message || currentEntry.stacktrace.length > 0 ) {
             logEntries.push( currentEntry );
@@ -80,10 +97,9 @@ function parseLogFile({ logPath, streamOptions = {} }) {
           currentEntry = { date, type, message, stacktrace: [] };
         }
       } else if ( capturingStacktrace ) {
-        currentEntry.stacktrace.push( line );
+        currentEntry.stacktrace.push( parseStacktrace(line) );
       } else if ( line.includes( 'Stack trace:' ) ) {
         capturingStacktrace = true;
-        currentEntry.stacktrace.push( line );
       } else {
         currentEntry.message += '\n' + line;
       }

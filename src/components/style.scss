@@ -169,7 +169,18 @@ body {
       max-height: 100px;
 
       .stackTrace {
-        color: #fff;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        margin-bottom: 16px;
+
+        .file {
+          color: #4aed60;
+        }
+
+        .detail {
+          color: #fff;
+        }
       }
     }
   }

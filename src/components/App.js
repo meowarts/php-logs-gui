@@ -108,8 +108,11 @@ function App() {
               <img src={CloseImage} className='closeButton clickable' onClick={() => setSelectedEntry(null)} width={15} height={15} color="white" />
             </div>
             <div className='stackTraceContent scrollable'>
-              {selectedEntry.stacktrace.map((line, idx) => (
-                <div key={idx} className="stackTrace">{line}</div>
+              {selectedEntry.stacktrace.map((line) => (
+                <div className='stackTrace' key={line}>
+                  <div className='file'>{line.file}</div>
+                  <div className='detail'>{line.detail}</div>
+                </div>
               ))}
             </div>
           </div>

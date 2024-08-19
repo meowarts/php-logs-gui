@@ -171,5 +171,16 @@ body .stackTraceSection .stackTraceContent {
 }
 
 body .stackTraceSection .stackTraceContent .stackTrace {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 16px;
+}
+
+body .stackTraceSection .stackTraceContent .stackTrace .file {
+  color: #4aed60;
+}
+
+body .stackTraceSection .stackTraceContent .stackTrace .detail {
   color: #fff;
 }
