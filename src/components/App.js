@@ -51,26 +51,12 @@ function App() {
     setLogData(filtered);
   }, [originalLogData]);
 
-  const groupEntriesByDate = useCallback((entries) => {
-    return entries.reduce((groups, entry) => {
-      const date = isToday(entry.date)
-        ? 'Today'
-        : new Date(entry.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
-      if (!groups[date]) {
-        groups[date] = [];
-      }
-      groups[date].push(entry);
-      return groups;
-    }, {});
-  }, []);
-
   const clearLogs = useCallback(() => {
     setOriginalLogData([]);
     setLogData([]);
     setSelectedEntry(null);
   }, []);
 
-  const groupedEntries = groupEntriesByDate(logData.slice().reverse().slice(0, 60));
   const showStackTrace = selectedEntry && !!selectedEntry.stacktrace?.length;
 
   return (
@@ -86,17 +72,12 @@ function App() {
         </div>
         <div className="content scrollable" sytle={`height: calc(100vh - 45.5px ${showStackTrace ? '- 30vh' : ''})`}>
           <div className="logsContainer">
-            {Object.keys(groupedEntries).map((date) => (
-              <div key={date}>
-                <h1>{date}</h1>
-                {groupedEntries[date].map((entry, index) => (
-                  <div key={entry.date + entry.type + entry.message + index}
-                    className={`logEntry ${isToday(entry.date) ? entry.type : ''}`}
-                    onClick={() => setSelectedEntry(entry)}
-                  >
-                    <div>{toFriendlyDate(entry.date)} - {entry.message}</div>
-                  </div>
-                ))}
+            {logData.map((entry, index) => (
+              <div key={entry.date + entry.type + entry.message + index}
+                className={`logEntry ${isToday(entry.date) ? entry.type : ''}`}
+                onClick={() => setSelectedEntry(entry)}
+              >
+                <div>{toFriendlyDate(entry.date)} - {entry.message}</div>
               </div>
             ))}
           </div>
