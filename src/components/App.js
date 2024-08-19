@@ -63,6 +63,13 @@ function App() {
     setLogData(filtered);
   }, [originalLogData]);
 
+  const openFileInVSCode = useCallback(({ fileName, lineNumber }) => {
+    if (!fileName || !lineNumber) {
+      return;
+    }
+    ipcRenderer.send('open-file-in-vscode', { fileName, lineNumber });
+  }, []);
+
   const clearLogs = useCallback(() => {
     setOriginalLogData([]);
     setLogData([]);
@@ -114,10 +121,10 @@ function App() {
               <img src={CloseImage} className='closeButton clickable' onClick={() => setSelectedEntry(null)} width={15} height={15} color="white" />
             </div>
             <div className='stackTraceContent scrollable'>
-              {selectedEntry.stacktrace.map((line, index) => (
-                <div className='stackTrace' key={`${line.file ?? index}-${line.detail}`}>
-                  <div className='file'>{line.file}</div>
-                  <div className='detail'>{line.detail}</div>
+              {selectedEntry.stacktrace.map(({ file, detail, fileName, lineNumber}, index) => (
+                <div className='stackTrace' key={`${file ?? index}-${detail}`}>
+                  <div className={`file ${file ? 'openable' : ''}`} onClick={() => openFileInVSCode({ fileName,  lineNumber })}>{file}</div>
+                  <div className='detail'>{detail}</div>
                 </div>
               ))}
             </div>

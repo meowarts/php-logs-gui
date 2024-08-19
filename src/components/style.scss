@@ -178,6 +178,10 @@ body {
 
         .file {
           color: #4aed60;
+
+          &.openable {
+            cursor: pointer;
+          }
         }
 
         .detail {

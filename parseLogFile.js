@@ -46,10 +46,14 @@ function parseStacktrace( stacktrace ) {
     ? {
         file: `${match[1]} ${match[2]}(${match[3]})`,
         detail: match[4],
+        fileName: match[2],
+        lineNumber: match[3],
       }
     : {
         file: null,
         detail: stacktrace.trim(),
+        fileName: null,
+        lineNumber: null,
       };
 }
 

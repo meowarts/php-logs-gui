@@ -183,6 +183,10 @@ body .stackTraceSection .stackTraceContent .stackTrace .file {
   color: #4aed60;
 }
 
+body .stackTraceSection .stackTraceContent .stackTrace .file.openable {
+  cursor: pointer;
+}
+
 body .stackTraceSection .stackTraceContent .stackTrace .detail {
   color: #fff;
 }
