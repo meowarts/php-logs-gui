@@ -110,7 +110,7 @@ body .content {
 
 body .content .logsContainer {
   flex: auto;
-  padding: 10px 35px;
+  padding: 10px 25px;
 }
 
 body .content .logsContainer h1 {
@@ -118,7 +118,7 @@ body .content .logsContainer h1 {
 }
 
 body .content .logsContainer .logEntry {
-  margin-bottom: 32px;
+  margin-bottom: 16px;
   cursor: pointer;
   display: flex;
   flex-direction: column;

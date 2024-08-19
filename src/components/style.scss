@@ -109,14 +109,14 @@ body {
 
     .logsContainer {
       flex: auto;
-      padding: 10px 35px;
+      padding: 10px 25px;
 
       h1 {
         margin: 40px 0;
       }
 
       .logEntry {
-        margin-bottom: 32px;
+        margin-bottom: 16px;
         cursor: pointer;
         display: flex;
         flex-direction: column;
