@@ -32,6 +32,10 @@ function App() {
       ipcRenderer.send('watch-another-file', filePath);
     });
 
+    ipcRenderer.on('selected-log', (event, entry) => {
+      setSelectedEntry(entry);
+    });
+
     const handleKeyDown = (event) => {
       if (event.key === 'Escape') {
         setSelectedEntry(null);

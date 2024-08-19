@@ -68,6 +68,7 @@ function sendNotification( log ) {
         mainWindow.restore();
       }
       mainWindow.focus();
+      mainWindow.webContents.send('selected-log', log);
     }
   });
 
