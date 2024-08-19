@@ -32,10 +32,18 @@ function App() {
       ipcRenderer.send('watch-another-file', filePath);
     });
 
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        setSelectedEntry(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
     return () => {
       ipcRenderer.removeAllListeners('log-update');
       ipcRenderer.removeAllListeners('selected-file');
       ipcRenderer.removeAllListeners('log-reset');
+      window.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
 
