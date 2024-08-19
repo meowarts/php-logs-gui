@@ -105,6 +105,7 @@ body .actionBar .search .closeButton.hidden {
 
 body .content {
   overflow-y: auto;
+  overflow-x: hidden;
   width: 100vw;
 }
 
@@ -166,6 +167,7 @@ body .stackTraceSection .stackTraceBar .closeButton:hover {
 body .stackTraceSection .stackTraceContent {
   background-color: #1A1A1A;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 20px;
   max-height: 100px;
 }

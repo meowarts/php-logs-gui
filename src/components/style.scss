@@ -105,6 +105,7 @@ body {
 
   .content {
     overflow-y: auto;
+    overflow-x: hidden;
     width: 100vw;
 
     .logsContainer {
@@ -165,6 +166,7 @@ body {
     .stackTraceContent {
       background-color: #1A1A1A;
       overflow-y: auto;
+      overflow-x: hidden;
       padding: 20px;
       max-height: 100px;
 

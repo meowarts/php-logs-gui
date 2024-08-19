@@ -1,13 +1,18 @@
 import './style.css';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 const { ipcRenderer } = window.require('electron');
 
 import CloseImage from '../assets/close.svg';
 import DebouncedSearch from './DebouncedSearch';
 import { isToday, toFriendlyDate } from '../utils/date';
 
+const STACKTRACE_SECTION_HEIGHT = 181;
+const HEADER_HEIGHT = 65.5;
+const MARGIN_HEIGHT = 16;
+
 function App() {
+  const scrollRef = useRef(null);
   const [originalLogData, setOriginalLogData] = useState([]);
   const [logData, setLogData] = useState([]);
   const [selectedEntry, setSelectedEntry] = useState(null);
@@ -30,12 +35,19 @@ function App() {
     return () => {
       ipcRenderer.removeAllListeners('log-update');
       ipcRenderer.removeAllListeners('selected-file');
+      ipcRenderer.removeAllListeners('log-reset');
     };
   }, []);
 
   useEffect(() => {
     setLogData(originalLogData);
   }, [originalLogData]);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [logData]);
 
   const filteredData = useCallback((value) => {
     setSelectedEntry(null);
@@ -70,12 +82,25 @@ function App() {
           </div>
           <DebouncedSearch className="searchTextField" placeholder="Search" onSearch={filteredData} />
         </div>
-        <div className="content scrollable" sytle={`height: calc(100vh - 45.5px ${showStackTrace ? '- 30vh' : ''})`}>
+        <div ref={scrollRef} className="content scrollable" sytle={`height: calc(100vh - 45.5px ${showStackTrace ? '- 30vh' : ''})`}>
           <div className="logsContainer">
             {logData.map((entry, index) => (
               <div key={entry.date + entry.type + entry.message + index}
                 className={`logEntry ${isToday(entry.date) ? entry.type : ''}`}
-                onClick={() => setSelectedEntry(entry)}
+                onClick={(event) => {
+                  setSelectedEntry(entry);
+                  const { bottom } = event.currentTarget.getBoundingClientRect();
+                  const scrollBottomInContainer = scrollRef.current.clientHeight + HEADER_HEIGHT - bottom;
+                  if (entry.stacktrace?.length && scrollBottomInContainer <= STACKTRACE_SECTION_HEIGHT) {
+                    const stacktraceHeight = showStackTrace ? 0 : STACKTRACE_SECTION_HEIGHT;
+                    const additionalHeight = scrollBottomInContainer < 0
+                      ? stacktraceHeight + Math.abs(scrollBottomInContainer) + MARGIN_HEIGHT
+                      : stacktraceHeight - scrollBottomInContainer + MARGIN_HEIGHT;
+                    if (additionalHeight > 0) {
+                      setTimeout(() => scrollRef.current.scrollTop += additionalHeight, 100);
+                    }
+                  }
+                }}
               >
                 <div>{toFriendlyDate(entry.date)} - {entry.message}</div>
               </div>
@@ -89,8 +114,8 @@ function App() {
               <img src={CloseImage} className='closeButton clickable' onClick={() => setSelectedEntry(null)} width={15} height={15} color="white" />
             </div>
             <div className='stackTraceContent scrollable'>
-              {selectedEntry.stacktrace.map((line) => (
-                <div className='stackTrace' key={line}>
+              {selectedEntry.stacktrace.map((line, index) => (
+                <div className='stackTrace' key={`${line.file ?? index}-${line.detail}`}>
                   <div className='file'>{line.file}</div>
                   <div className='detail'>{line.detail}</div>
                 </div>
