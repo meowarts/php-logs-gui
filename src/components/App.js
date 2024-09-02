@@ -1,7 +1,7 @@
 import './style.css';
 
 import React, { useCallback, useEffect, useState, useRef } from 'react';
-const { ipcRenderer } = window.require('electron');
+const { ipcRenderer, clipboard } = window.require('electron');
 
 import StacktraceIcon from '../assets/icon.png';
 import OpenIcon from '../assets/open.png';
@@ -17,6 +17,7 @@ function App() {
   const [originalLogData, setOriginalLogData] = useState([]);
   const [logData, setLogData] = useState([]);
   const [selectedEntry, setSelectedEntry] = useState(null);
+  const [statusMessage, setStatusMessage] = useState(null);
 
   useEffect(() => {
     ipcRenderer.on('log-update', (event, data) => {
@@ -93,6 +94,11 @@ function App() {
     setSelectedEntry(null);
   }, []);
 
+  const showStatusMessage = useCallback((message) => {
+    setStatusMessage(message);
+    setTimeout(() => setStatusMessage(null), 2000);
+  }, []);
+
   const isSameEntry = useCallback((entry1, entry2) => {
     return !!entry1 && !!entry2 && entry1.id === entry2.id;
   }, []);
@@ -113,7 +119,10 @@ function App() {
             <button onClick={() => ipcRenderer.send('open-file-dialog')} className="iconButton">
               <img src={OpenIcon} width={30} height={30} />
             </button>
-            <button onClick={() => {}} className="iconButton" disabled={selectedEntry === null}>
+            <button onClick={() => {
+              clipboard.writeText(selectedEntry.message);
+              showStatusMessage('Copied to clipboard!');
+            }} className="iconButton" disabled={selectedEntry === null}>
               <img src={CopyIcon} width={30} height={30} />
             </button>
             <button onClick={() => {}} className="iconButton" disabled={selectedEntry === null}>
@@ -125,6 +134,7 @@ function App() {
             <button onClick={() => {}} className="iconButton">
               <img src={EmptyIcon} width={30} height={30} />
             </button>
+            <div className={generateClassName('statusMessage', statusMessage !== null ? 'show' : 'hide')}>{statusMessage}</div>
           </div>
           <DebouncedSearch className="searchTextField" placeholder="Search" onSearch={filteredData} />
         </div>
