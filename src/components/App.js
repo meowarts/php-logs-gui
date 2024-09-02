@@ -99,6 +99,10 @@ function App() {
     setTimeout(() => setStatusMessage(null), 2000);
   }, []);
 
+  const removeLogEntry = useCallback((entry) => {
+    setOriginalLogData((prevData) => prevData.filter((e) => e.id !== entry.id));
+  }, []);
+
   const isSameEntry = useCallback((entry1, entry2) => {
     return !!entry1 && !!entry2 && entry1.id === entry2.id;
   }, []);
@@ -125,7 +129,7 @@ function App() {
             }} className="iconButton" disabled={selectedEntry === null}>
               <img src={CopyIcon} width={30} height={30} />
             </button>
-            <button onClick={() => {}} className="iconButton" disabled={selectedEntry === null}>
+            <button onClick={() => removeLogEntry(selectedEntry)} className="iconButton" disabled={selectedEntry === null}>
               <img src={RemoveIcon} width={30} height={30} />
             </button>
             <button onClick={clearLogs} className="iconButton">
