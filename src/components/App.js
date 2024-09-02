@@ -93,7 +93,7 @@ function App() {
   }, []);
 
   const isSameEntry = useCallback((entry1, entry2) => {
-    return !!entry1 && !!entry2 && (entry1.date + entry1.type + entry1.message) === (entry2.date + entry2.type + entry2.message);
+    return !!entry1 && !!entry2 && entry1.id === entry2.id;
   }, []);
 
   const showStackTrace = selectedEntry && !!selectedEntry.stacktrace?.length;
@@ -111,8 +111,8 @@ function App() {
         </div>
         <div ref={scrollRef} className="content scrollable" sytle={`height: calc(100vh - 45.5px ${showStackTrace ? '- 30vh' : ''})`}>
           <div className="logsContainer">
-            {logData.map((entry, index) => (
-              <div key={entry.date + entry.type + entry.message + index}
+            {logData.map((entry) => (
+              <div key={entry.id}
                 className={`logEntry ${isToday(entry.date) ? entry.type : ''} ${isSameEntry(selectedEntry, entry) ? 'selected' : ''}`}
                 onClick={(event) => {
                   setSelectedEntry(entry);
@@ -142,7 +142,7 @@ function App() {
             </div>
             <div className='stackTraceContent scrollable'>
               {selectedEntry.stacktrace.map(({ file, detail, fileName, lineNumber}, index) => (
-                <div className='stackTrace' key={`${file ?? index}-${detail}`}>
+                <div className='stackTrace' key={`${selectedEntry.id}-stacktrace-${index}`}>
                   <div className={`file ${file ? 'openable' : ''}`} onClick={() => openFileInVSCode({ fileName,  lineNumber })}>{file}</div>
                   <div className='detail'>{detail}</div>
                 </div>

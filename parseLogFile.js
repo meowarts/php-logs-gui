@@ -1,5 +1,6 @@
 const fs = require('fs');
 const readline = require('readline');
+const { v4: uuidv4 } = require('uuid');
 
 /**
  * Parses a date string in the format '[DD-MMM-YYYY HH:MM:SS UTC]'
@@ -58,6 +59,18 @@ function parseStacktrace( stacktrace ) {
 }
 
 /**
+ * Initializes a log entry object.
+ * @param {object} options - The options to initialize the log entry with.
+ * @param {Date|null} options.date - The date of the log entry. defaults to null.
+ * @param {string} options.type - The log type ('error', 'warning', 'notice'). defaults to 'notice'.
+ * @param {string} options.message - The log message. defaults to ''.
+ * @returns {object} - The initialized log entry object.
+ */
+function initializeEntry({ date, type, message }) {
+  return { id: uuidv4(), date, type, message, stacktrace: [] };
+}
+
+/**
  * Parses the log file and extracts log entries.
  * @param {string} logPath - The path to the log file.
  * @param {object} streamOptions - The streamOptions to pass to fs.createReadStream.
@@ -68,7 +81,7 @@ function parseLogFile({ logPath, streamOptions = {} }) {
     const stream = fs.createReadStream(logPath, streamOptions);
     const rl = readline.createInterface({ input: stream, crlfDelay: Infinity });
     const logEntries = [];
-    let currentEntry = { date: null, type: 'notice', message: '', stacktrace: [] };
+    let currentEntry = initializeEntry({ date: null, type: 'notice', message: ''});
     let capturingStacktrace = false;
 
     rl.on( 'line', ( line ) => {
@@ -90,15 +103,17 @@ function parseLogFile({ logPath, streamOptions = {} }) {
             // New log entry, end of stack trace
             capturingStacktrace = false;
             logEntries.push( currentEntry );
-            currentEntry = { date, type, message, stacktrace: [] };
+            currentEntry = initializeEntry({ date, type, message });
           }
         } else if ( line.includes( 'PHP Stack trace:' ) ) {
+          // start of stack trace
           capturingStacktrace = true;
         } else {
+          // New log entry. Push the current entry to the log entries array if content exists.
           if ( currentEntry.message || currentEntry.stacktrace.length > 0 ) {
             logEntries.push( currentEntry );
           }
-          currentEntry = { date, type, message, stacktrace: [] };
+          currentEntry = initializeEntry({ date, type, message });
         }
       } else if ( capturingStacktrace ) {
         currentEntry.stacktrace.push( parseStacktrace(line) );
