@@ -43,8 +43,8 @@ function createTray(mainWindow) {
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
-    width: 420,
-    height: 620,
+    width: 900,
+    height: 600,
     show: false,
     icon: iconPath,
     webPreferences: {
