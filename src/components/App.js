@@ -3,14 +3,9 @@ import './style.css';
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 const { ipcRenderer } = window.require('electron');
 
-import CloseImage from '../assets/close.svg';
 import StacktraceIcon from '../assets/icon.png';
 import DebouncedSearch from './DebouncedSearch';
 import { isToday, toFriendlyDate } from '../utils/date';
-
-const STACKTRACE_SECTION_HEIGHT = 181;
-const HEADER_HEIGHT = 65.5;
-const MARGIN_HEIGHT = 16;
 
 function App() {
   const scrollRef = useRef(null);
@@ -99,6 +94,8 @@ function App() {
 
   const hasStacktraces = useCallback((entry) => entry.stacktrace?.length > 0, []);
 
+  const generateClassName = useCallback((...args) => args.filter((v) => v !== '').join(' '), []);
+
   const showStackTrace = selectedEntry && !!selectedEntry.stacktrace?.length;
 
   return (
@@ -112,13 +109,12 @@ function App() {
           </div>
           <DebouncedSearch className="searchTextField" placeholder="Search" onSearch={filteredData} />
         </div>
-        <div ref={scrollRef} className={`content scrollable ${showStackTrace ? 'stop' : ''}`} sytle={`height: calc(100vh - 45.5px ${showStackTrace ? '- 30vh' : ''})`}>
-
-          <div className={`modal ${showStackTrace ? 'show' : 'hide'}`}>
+        <div ref={scrollRef} className={generateClassName('content', 'scrollable', showStackTrace ? 'lock' : '')}>
+          <div className={generateClassName('modal', showStackTrace ? 'show' : 'hide')}>
             <div className='stackTraceContent'>
               {selectedEntry?.stacktrace.map(({ file, detail, fileName, lineNumber}, index) => (
                 <div className='stackTrace' key={`${selectedEntry.id}-stacktrace-${index}`}>
-                  <div className={`file ${file ? 'openable' : ''}`} onClick={() => openFileInVSCode({ fileName,  lineNumber })}>{file}</div>
+                  <div className={generateClassName('file', file ? 'openable' : '')} onClick={() => openFileInVSCode({ fileName,  lineNumber })}>{file}</div>
                   <div className='detail'>{detail}</div>
                 </div>
               ))}
@@ -129,13 +125,13 @@ function App() {
           <div className="logsContainer">
             {logData.map((entry) => (
               <div key={entry.id}
-                className={`logEntry ${isToday(entry.date) ? entry.type : ''} ${isSameEntry(selectedEntry, entry) ? 'selected' : ''} ${hasStacktraces(entry) ? 'clickable' : ''}`}
                 onClick={() => {
                   if (!hasStacktraces(entry)) {
                     return;
                   }
                   setSelectedEntry(entry);
                 }}
+                className={generateClassName('logEntry', isToday(entry.date) ? entry.type : '', isSameEntry(selectedEntry, entry) ? 'selected' : '')}
               >
                 <div>{toFriendlyDate(entry.date)} - {entry.message}</div>
 

@@ -110,7 +110,7 @@ body .content {
   width: 100vw;
 }
 
-body .content.stop {
+body .content.lock {
   overflow: hidden;
 }
 
@@ -127,6 +127,7 @@ body .content .logsContainer .logEntry {
   background-color: #212121;
   border: 2px solid #303031;
   border-radius: 10px;
+  cursor: pointer;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -195,7 +196,7 @@ body .modal .closeButton {
   border-radius: 20px;
   cursor: pointer;
   margin: 10px;
-  padding: 25px;
+  padding: 20px;
   text-align: center;
 }
 
