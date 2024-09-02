@@ -93,6 +93,12 @@ body .actionBar .iconButton:hover {
   background-color: #444;
 }
 
+body .actionBar .iconButton:disabled {
+  background-color: transparent;
+  cursor: inherit;
+  opacity: 0.5;
+}
+
 body .actionBar .search {
   position: relative;
 }

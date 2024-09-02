@@ -113,10 +113,10 @@ function App() {
             <button onClick={() => ipcRenderer.send('open-file-dialog')} className="iconButton">
               <img src={OpenIcon} width={30} height={30} />
             </button>
-            <button onClick={() => {}} className="iconButton">
+            <button onClick={() => {}} className="iconButton" disabled={selectedEntry === null}>
               <img src={CopyIcon} width={30} height={30} />
             </button>
-            <button onClick={() => {}} className="iconButton">
+            <button onClick={() => {}} className="iconButton" disabled={selectedEntry === null}>
               <img src={RemoveIcon} width={30} height={30} />
             </button>
             <button onClick={clearLogs} className="iconButton">

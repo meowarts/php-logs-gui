@@ -90,6 +90,12 @@ body {
       &:hover {
         background-color: #444;
       }
+
+      &:disabled {
+        background-color: transparent;
+        cursor: inherit;
+        opacity: 0.5;
+      }
     }
 
     .search {
