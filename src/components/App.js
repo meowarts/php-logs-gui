@@ -110,7 +110,7 @@ function App() {
         <div className="actionBar">
           <div className='actions'>
             <label className="label">Nyao Error Logs</label>
-            <button onClick={() => {}} className="iconButton">
+            <button onClick={() => ipcRenderer.send('open-file-dialog')} className="iconButton">
               <img src={OpenIcon} width={30} height={30} />
             </button>
             <button onClick={() => {}} className="iconButton">

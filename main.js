@@ -197,4 +197,6 @@ ipcMain.on( 'open-file-in-vscode', ( event, { fileName, lineNumber } ) => {
   });
 });
 
+ipcMain.on( 'open-file-dialog', openFileDialog );
+
 module.exports = { createWindow };
