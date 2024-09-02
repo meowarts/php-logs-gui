@@ -125,13 +125,8 @@ function App() {
           <div className="logsContainer">
             {logData.map((entry) => (
               <div key={entry.id}
-                onClick={() => {
-                  if (!hasStacktraces(entry)) {
-                    return;
-                  }
-                  setSelectedEntry(entry);
-                }}
                 className={generateClassName('logEntry', isToday(entry.date) ? entry.type : '', isSameEntry(selectedEntry, entry) ? 'selected' : '')}
+                onClick={() => setSelectedEntry(entry)}
               >
                 <div>{toFriendlyDate(entry.date)} - {entry.message}</div>
 
