@@ -21,14 +21,15 @@
   "dependencies": {
     "postcss": "^8.4.38",
     "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "react-dom": "^17.0.2",
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
-    "@pmmmwh/react-refresh-webpack-plugin": "^0.5.13",
     "@babel/core": "^7.24.5",
     "@babel/preset-env": "^7.24.5",
     "@babel/preset-react": "^7.24.1",
     "@electron/packager": "^18.3.2",
+    "@pmmmwh/react-refresh-webpack-plugin": "^0.5.13",
     "babel-loader": "^8.2.5",
     "cross-env": "^7.0.3",
     "css-loader": "^6.7.1",
@@ -37,9 +38,9 @@
     "file-loader": "^6.2.0",
     "html-webpack-plugin": "^5.6.0",
     "mini-css-extract-plugin": "^2.9.0",
-    "style-loader": "^3.3.1",
     "react-hot-loader": "^4.13.1",
     "react-refresh": "^0.14.2",
+    "style-loader": "^3.3.1",
     "webpack": "^5.91.0",
     "webpack-cli": "^4.9.2",
     "webpack-dev-server": "^3.11.3"
