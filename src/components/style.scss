@@ -52,6 +52,11 @@ body {
     background-color: #303031;
     justify-content: space-between;
 
+    .actions {
+      display: flex;
+      align-items: center;
+    }
+
     .label {
       font-size: 15px;
       margin-right: 10px;
@@ -65,6 +70,22 @@ body {
       border-radius: 3px;
       cursor: pointer;
       margin-right: 10px;
+
+      &:hover {
+        background-color: #444;
+      }
+    }
+
+    .iconButton {
+      align-items: center;
+      background-color: transparent;
+      border-radius: 45px;
+      border-width: 0;
+      cursor: pointer;
+      display: flex;
+      height: 45px;
+      justify-content: center;
+      width: 45px;
 
       &:hover {
         background-color: #444;

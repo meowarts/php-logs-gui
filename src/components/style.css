@@ -53,6 +53,11 @@ body .actionBar {
   justify-content: space-between;
 }
 
+body .actionBar .actions {
+  display: flex;
+  align-items: center;
+}
+
 body .actionBar .label {
   font-size: 15px;
   margin-right: 10px;
@@ -69,6 +74,22 @@ body .actionBar .button {
 }
 
 body .actionBar .button:hover {
+  background-color: #444;
+}
+
+body .actionBar .iconButton {
+  align-items: center;
+  background-color: transparent;
+  border-radius: 45px;
+  border-width: 0;
+  cursor: pointer;
+  display: flex;
+  height: 45px;
+  justify-content: center;
+  width: 45px;
+}
+
+body .actionBar .iconButton:hover {
   background-color: #444;
 }
 

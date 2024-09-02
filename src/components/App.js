@@ -4,6 +4,11 @@ import React, { useCallback, useEffect, useState, useRef } from 'react';
 const { ipcRenderer } = window.require('electron');
 
 import StacktraceIcon from '../assets/icon.png';
+import OpenIcon from '../assets/open.png';
+import CopyIcon from '../assets/copy.png';
+import RemoveIcon from '../assets/remove.png';
+import ClearIcon from '../assets/clear.png';
+import EmptyIcon from '../assets/empty.png';
 import DebouncedSearch from './DebouncedSearch';
 import { isToday, toFriendlyDate } from '../utils/date';
 
@@ -103,9 +108,23 @@ function App() {
       {/* <div className="aside"> Add sidebar content here </div> */}
       <div className="main">
         <div className="actionBar">
-          <div>
+          <div className='actions'>
             <label className="label">Nyao Error Logs</label>
-            <button onClick={clearLogs} className="button">Clear Logs</button>
+            <button onClick={() => {}} className="iconButton">
+              <img src={OpenIcon} width={30} height={30} />
+            </button>
+            <button onClick={() => {}} className="iconButton">
+              <img src={CopyIcon} width={30} height={30} />
+            </button>
+            <button onClick={() => {}} className="iconButton">
+              <img src={RemoveIcon} width={30} height={30} />
+            </button>
+            <button onClick={clearLogs} className="iconButton">
+              <img src={ClearIcon} width={30} height={30} />
+            </button>
+            <button onClick={() => {}} className="iconButton">
+              <img src={EmptyIcon} width={30} height={30} />
+            </button>
           </div>
           <DebouncedSearch className="searchTextField" placeholder="Search" onSearch={filteredData} />
         </div>
