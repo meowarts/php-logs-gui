@@ -112,28 +112,29 @@ function App() {
           </div>
           <DebouncedSearch className="searchTextField" placeholder="Search" onSearch={filteredData} />
         </div>
-        <div ref={scrollRef} className="content scrollable" sytle={`height: calc(100vh - 45.5px ${showStackTrace ? '- 30vh' : ''})`}>
+        <div ref={scrollRef} className={`content scrollable ${showStackTrace ? 'stop' : ''}`} sytle={`height: calc(100vh - 45.5px ${showStackTrace ? '- 30vh' : ''})`}>
+
+          <div className={`modal ${showStackTrace ? 'show' : 'hide'}`}>
+            <div className='stackTraceContent'>
+              {selectedEntry?.stacktrace.map(({ file, detail, fileName, lineNumber}, index) => (
+                <div className='stackTrace' key={`${selectedEntry.id}-stacktrace-${index}`}>
+                  <div className={`file ${file ? 'openable' : ''}`} onClick={() => openFileInVSCode({ fileName,  lineNumber })}>{file}</div>
+                  <div className='detail'>{detail}</div>
+                </div>
+              ))}
+            </div>
+            <div className='closeButton clickable' onClick={() => setSelectedEntry(null)}>Close</div>
+          </div>
+
           <div className="logsContainer">
             {logData.map((entry) => (
               <div key={entry.id}
                 className={`logEntry ${isToday(entry.date) ? entry.type : ''} ${isSameEntry(selectedEntry, entry) ? 'selected' : ''} ${hasStacktraces(entry) ? 'clickable' : ''}`}
-                onClick={(event) => {
+                onClick={() => {
                   if (!hasStacktraces(entry)) {
                     return;
                   }
-
                   setSelectedEntry(entry);
-                  const { bottom } = event.currentTarget.getBoundingClientRect();
-                  const scrollBottomInContainer = scrollRef.current.clientHeight + HEADER_HEIGHT - bottom;
-                  if (entry.stacktrace?.length && scrollBottomInContainer <= STACKTRACE_SECTION_HEIGHT) {
-                    const stacktraceHeight = showStackTrace ? 0 : STACKTRACE_SECTION_HEIGHT;
-                    const additionalHeight = scrollBottomInContainer < 0
-                      ? stacktraceHeight + Math.abs(scrollBottomInContainer) + MARGIN_HEIGHT
-                      : stacktraceHeight - scrollBottomInContainer + MARGIN_HEIGHT;
-                    if (additionalHeight > 0) {
-                      setTimeout(() => scrollRef.current.scrollTop += additionalHeight, 100);
-                    }
-                  }
                 }}
               >
                 <div>{toFriendlyDate(entry.date)} - {entry.message}</div>
@@ -147,22 +148,6 @@ function App() {
             ))}
           </div>
         </div>
-        {showStackTrace && (
-          <div className="stackTraceSection">
-            <div className='stackTraceBar'>
-              <div>Stack Trace:</div>
-              <img src={CloseImage} className='closeButton clickable' onClick={() => setSelectedEntry(null)} width={15} height={15} color="white" />
-            </div>
-            <div className='stackTraceContent scrollable'>
-              {selectedEntry.stacktrace.map(({ file, detail, fileName, lineNumber}, index) => (
-                <div className='stackTrace' key={`${selectedEntry.id}-stacktrace-${index}`}>
-                  <div className={`file ${file ? 'openable' : ''}`} onClick={() => openFileInVSCode({ fileName,  lineNumber })}>{file}</div>
-                  <div className='detail'>{detail}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

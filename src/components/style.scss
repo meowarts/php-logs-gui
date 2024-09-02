@@ -109,6 +109,10 @@ body {
     overflow-x: hidden;
     width: 100vw;
 
+    &.stop {
+      overflow: hidden;
+    }
+
     .logsContainer {
       flex: auto;
       padding: 10px 16px;
@@ -162,56 +166,61 @@ body {
     }
   }
 
-  .stackTraceSection {
-    background-color: #333;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
+  .modal {
+    background-color: #1A1A1A;
+    border: 3px solid #333;
+    bottom: 20px;
+    box-sizing: border-box;
+    height: calc(100% - 40px);
+    left: 30px;
+    position: sticky;
+    right: 30px;
+    top: 20px;
+    width: calc(100% - 60px);
 
-    .stackTraceBar {
-      background-color: #333;
-      display: flex;
-      font-weight: bold;
-      padding: 10px 10px 10px 35px;
-      justify-content: space-between;
-      align-items: center;
-
-      .closeButton {
-        border-radius: 15px;
-        background-color: #1A1A1A;
-        cursor: pointer;
-        padding: 3px;
-
-        &:hover {
-          background-color: #444;
-        }
-      }
+    &.hide {
+      display: none;
     }
 
-    .stackTraceContent {
-      background-color: #1A1A1A;
-      overflow-y: auto;
-      overflow-x: hidden;
-      padding: 20px;
-      max-height: 100px;
+    &.show {
+      display: flex;
+      justify-content: space-between;
+      flex-direction: column;
+    }
 
-      .stackTrace {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-        margin-bottom: 16px;
+    .closeButton {
+      background-color: #535353;
+      border: 2px solid #fff;
+      border-radius: 20px;
+      cursor: pointer;
+      margin: 10px;
+      padding: 25px;
+      text-align: center;
+    }
+  }
 
-        .file {
-          color: #4aed60;
+  .stackTraceContent {
+    background-color: #1A1A1A;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 20px;
 
-          &.openable {
-            cursor: pointer;
-          }
+    .stackTrace {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      margin-bottom: 16px;
+
+      .file {
+        color: #4aed60;
+
+        &.openable {
+          cursor: pointer;
         }
+      }
 
-        .detail {
-          color: #fff;
-        }
+      .detail {
+        color: #fff;
       }
     }
   }

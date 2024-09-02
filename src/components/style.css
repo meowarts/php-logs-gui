@@ -110,6 +110,10 @@ body .content {
   width: 100vw;
 }
 
+body .content.stop {
+  overflow: hidden;
+}
+
 body .content .logsContainer {
   flex: auto;
   padding: 10px 16px;
@@ -162,56 +166,61 @@ body .content .logsContainer .logEntry.clickable {
   cursor: pointer;
 }
 
-body .stackTraceSection {
-  background-color: #333;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
-
-body .stackTraceSection .stackTraceBar {
-  background-color: #333;
-  display: flex;
-  font-weight: bold;
-  padding: 10px 10px 10px 35px;
-  justify-content: space-between;
-  align-items: center;
-}
-
-body .stackTraceSection .stackTraceBar .closeButton {
-  border-radius: 15px;
+body .modal {
   background-color: #1A1A1A;
+  border: 3px solid #333;
+  bottom: 20px;
+  box-sizing: border-box;
+  height: calc(100% - 40px);
+  left: 30px;
+  position: sticky;
+  right: 30px;
+  top: 20px;
+  width: calc(100% - 60px);
+}
+
+body .modal.hide {
+  display: none;
+}
+
+body .modal.show {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+}
+
+body .modal .closeButton {
+  background-color: #535353;
+  border: 2px solid #fff;
+  border-radius: 20px;
   cursor: pointer;
-  padding: 3px;
+  margin: 10px;
+  padding: 25px;
+  text-align: center;
 }
 
-body .stackTraceSection .stackTraceBar .closeButton:hover {
-  background-color: #444;
-}
-
-body .stackTraceSection .stackTraceContent {
+body .stackTraceContent {
   background-color: #1A1A1A;
   overflow-y: auto;
   overflow-x: hidden;
   padding: 20px;
-  max-height: 100px;
 }
 
-body .stackTraceSection .stackTraceContent .stackTrace {
+body .stackTraceContent .stackTrace {
   display: flex;
   flex-direction: column;
   gap: 2px;
   margin-bottom: 16px;
 }
 
-body .stackTraceSection .stackTraceContent .stackTrace .file {
+body .stackTraceContent .stackTrace .file {
   color: #4aed60;
 }
 
-body .stackTraceSection .stackTraceContent .stackTrace .file.openable {
+body .stackTraceContent .stackTrace .file.openable {
   cursor: pointer;
 }
 
-body .stackTraceSection .stackTraceContent .stackTrace .detail {
+body .stackTraceContent .stackTrace .detail {
   color: #fff;
 }
