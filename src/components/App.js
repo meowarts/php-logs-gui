@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useState, useRef } from 'react';
 const { ipcRenderer } = window.require('electron');
 
 import CloseImage from '../assets/close.svg';
+import StacktraceIcon from '../assets/icon.png';
 import DebouncedSearch from './DebouncedSearch';
 import { isToday, toFriendlyDate } from '../utils/date';
 
@@ -96,6 +97,8 @@ function App() {
     return !!entry1 && !!entry2 && entry1.id === entry2.id;
   }, []);
 
+  const hasStacktraces = useCallback((entry) => entry.stacktrace?.length > 0, []);
+
   const showStackTrace = selectedEntry && !!selectedEntry.stacktrace?.length;
 
   return (
@@ -113,8 +116,12 @@ function App() {
           <div className="logsContainer">
             {logData.map((entry) => (
               <div key={entry.id}
-                className={`logEntry ${isToday(entry.date) ? entry.type : ''} ${isSameEntry(selectedEntry, entry) ? 'selected' : ''}`}
+                className={`logEntry ${isToday(entry.date) ? entry.type : ''} ${isSameEntry(selectedEntry, entry) ? 'selected' : ''} ${hasStacktraces(entry) ? 'clickable' : ''}`}
                 onClick={(event) => {
+                  if (!hasStacktraces(entry)) {
+                    return;
+                  }
+
                   setSelectedEntry(entry);
                   const { bottom } = event.currentTarget.getBoundingClientRect();
                   const scrollBottomInContainer = scrollRef.current.clientHeight + HEADER_HEIGHT - bottom;
@@ -130,6 +137,12 @@ function App() {
                 }}
               >
                 <div>{toFriendlyDate(entry.date)} - {entry.message}</div>
+
+                {hasStacktraces(entry) &&
+                  <div className="stackTraceButton">
+                    <img src={StacktraceIcon} width={40} height={40}/>
+                  </div>
+                }
               </div>
             ))}
           </div>

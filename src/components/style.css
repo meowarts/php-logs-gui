@@ -123,9 +123,9 @@ body .content .logsContainer .logEntry {
   background-color: #212121;
   border: 2px solid #303031;
   border-radius: 10px;
-  cursor: pointer;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
   margin-bottom: 16px;
   padding: 10px;
 }
@@ -156,6 +156,10 @@ body .content .logsContainer .logEntry.notice {
 
 body .content .logsContainer .logEntry.notice.selected {
   border-color: #4aed60;
+}
+
+body .content .logsContainer .logEntry.clickable {
+  cursor: pointer;
 }
 
 body .stackTraceSection {
