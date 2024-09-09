@@ -3,7 +3,7 @@ import './style.css';
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 const { ipcRenderer, clipboard } = window.require('electron');
 
-import StacktraceIcon from '../assets/icon.png';
+import StacktraceIcon from '../assets/stacktrace.png';
 import FileIcon from '../assets/file.png';
 import CopyIcon from '../assets/copy.png';
 import RemoveIcon from '../assets/remove.png';
