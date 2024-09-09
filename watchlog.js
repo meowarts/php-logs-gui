@@ -8,12 +8,14 @@ let debounceTimeout = null;
 
 /**
  * Call the log update event on the main window.
- * @param {object} mainWindow - The main window object.
- * @param {Array} logEntries - The log entries to send.
+ * @param {object} options - The main window object.
+ * @param {object} options.mainWindow - The main window object.
+ * @param {string} options.logPath - The path to the log file.
+ * @param {Array} options.logEntries - The log entries to send.
  */
-function callLogUpdate( mainWindow, logEntries ) {
+function callLogUpdate({ mainWindow, logPath, logEntries }) {
   if ( mainWindow && !mainWindow.isDestroyed() && logEntries.length > 0 ) {
-    mainWindow.webContents.send( 'log-update', logEntries );
+    mainWindow.webContents.send( 'log-update', { logPath, logEntries } );
   }
 }
 
@@ -46,7 +48,7 @@ async function watchLogFile( mainWindow, logPath, reset = false ) {
       streamOptions: { start: startProcessPosition },
     });
     startProcessPosition = lastProcessedPosition;
-    callLogUpdate(mainWindow, logEntries);
+    callLogUpdate({mainWindow, logPath, logEntries});
   } catch (error) {
     console.error('Error processing log file:', error);
   }
@@ -65,7 +67,7 @@ async function watchLogFile( mainWindow, logPath, reset = false ) {
             streamOptions: { start: startProcessPosition },
           });
           startProcessPosition = lastProcessedPosition;
-          callLogUpdate(mainWindow, logEntries);
+          callLogUpdate({mainWindow, logPath, logEntries});
 
           if (mainWindow.isMinimized()) {
             sendNotification(logEntries[logEntries.length - 1]);

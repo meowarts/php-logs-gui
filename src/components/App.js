@@ -14,6 +14,7 @@ import { isToday, toFriendlyDate } from '../utils/date';
 
 function App() {
   const scrollRef = useRef(null);
+  const [logPath, setLogPath] = useState(null);
   const [originalLogData, setOriginalLogData] = useState([]);
   const [logData, setLogData] = useState([]);
   const [selectedEntry, setSelectedEntry] = useState(null);
@@ -21,8 +22,9 @@ function App() {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    ipcRenderer.on('log-update', (event, data) => {
-      setOriginalLogData((prevData) => [...prevData, ...data]);
+    ipcRenderer.on('log-update', (event, { logPath, logEntries }) => {
+      setOriginalLogData((prevData) => [...prevData, ...logEntries]);
+      setLogPath(logPath);
     });
 
     ipcRenderer.on('log-reset', () => {
@@ -136,7 +138,14 @@ function App() {
             <button onClick={clearLogs} className="iconButton">
               <img src={ClearIcon} width={30} height={30} />
             </button>
-            <button onClick={() => {}} className="iconButton">
+            <button className="iconButton"
+              onClick={() => {
+                if (confirm('Are you sure to clear all logs? It will delete the all log entries from the actual file. This action cannot be undone.')) {
+                  setOriginalLogData([]);
+                  ipcRenderer.send('empty-file', logPath);
+                }
+              }}
+            >
               <img src={EmptyIcon} width={30} height={30} />
             </button>
             <div className={generateClassName('statusMessage', statusMessage !== null ? 'show' : 'hide')}>{statusMessage}</div>
@@ -145,6 +154,11 @@ function App() {
         </div>
         <div ref={scrollRef} className={generateClassName('content', 'scrollable', showModal ? 'lock' : '')}>
           <div className="logsContainer">
+
+            {logData.length === 0 && <div className="emptyLogs">
+              <div>No logs found.</div>
+            </div>}
+
             {logData.map((entry) => (
               <div key={entry.id}
                 className={generateClassName('logEntry', isToday(entry.date) ? entry.type : '', isSameEntry(selectedEntry, entry) ? 'selected' : '')}
