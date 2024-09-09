@@ -255,6 +255,7 @@ body .stackTraceContent .stackTrace {
 
 body .stackTraceContent .stackTrace .file {
   color: #4aed60;
+  text-decoration: underline;
 }
 
 body .stackTraceContent .stackTrace .file.openable {
