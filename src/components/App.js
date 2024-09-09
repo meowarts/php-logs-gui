@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useState, useRef } from 'react';
 const { ipcRenderer, clipboard } = window.require('electron');
 
 import StacktraceIcon from '../assets/icon.png';
-import OpenIcon from '../assets/open.png';
+import FileIcon from '../assets/file.png';
 import CopyIcon from '../assets/copy.png';
 import RemoveIcon from '../assets/remove.png';
 import ClearIcon from '../assets/clear.png';
@@ -121,7 +121,7 @@ function App() {
           <div className='actions'>
             <label className="label">Nyao Error Logs</label>
             <button onClick={() => ipcRenderer.send('open-file-dialog')} className="iconButton">
-              <img src={OpenIcon} width={30} height={30} />
+              <img src={FileIcon} width={30} height={30} />
             </button>
             <button onClick={() => {
               clipboard.writeText(selectedEntry.message);
