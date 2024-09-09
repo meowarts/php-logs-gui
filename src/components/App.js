@@ -18,6 +18,7 @@ function App() {
   const [logData, setLogData] = useState([]);
   const [selectedEntry, setSelectedEntry] = useState(null);
   const [statusMessage, setStatusMessage] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     ipcRenderer.on('log-update', (event, data) => {
@@ -142,8 +143,33 @@ function App() {
           </div>
           <DebouncedSearch className="searchTextField" placeholder="Search" onSearch={filteredData} />
         </div>
-        <div ref={scrollRef} className={generateClassName('content', 'scrollable', showStackTrace ? 'lock' : '')}>
-          <div className={generateClassName('modal', showStackTrace ? 'show' : 'hide')}>
+        <div ref={scrollRef} className={generateClassName('content', 'scrollable', showModal ? 'lock' : '')}>
+          <div className="logsContainer">
+            {logData.map((entry) => (
+              <div key={entry.id}
+                className={generateClassName('logEntry', isToday(entry.date) ? entry.type : '', isSameEntry(selectedEntry, entry) ? 'selected' : '')}
+                onClick={() => {
+                  setShowModal(false);
+                  setSelectedEntry(entry);
+                }}
+              >
+                <div>{toFriendlyDate(entry.date)} - {entry.message}</div>
+
+                {hasStacktraces(entry) &&
+                  <div className="stackTraceButton" onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedEntry(entry);
+                    setShowModal(true);
+                  }}>
+                    <img src={StacktraceIcon} width={40} height={40}/>
+                  </div>
+                }
+              </div>
+            ))}
+          </div>
+
+          {/* Modal */}
+          <div className={generateClassName('modal', showModal ? 'show' : 'hide')}>
             <div className='stackTraceContent'>
               {selectedEntry?.stacktrace.map(({ file, detail, fileName, lineNumber}, index) => (
                 <div className='stackTrace' key={`${selectedEntry.id}-stacktrace-${index}`}>
@@ -152,25 +178,9 @@ function App() {
                 </div>
               ))}
             </div>
-            <div className='closeButton clickable' onClick={() => setSelectedEntry(null)}>Close</div>
+            <div className='closeButton clickable' onClick={() => setShowModal(false)}>Close</div>
           </div>
 
-          <div className="logsContainer">
-            {logData.map((entry) => (
-              <div key={entry.id}
-                className={generateClassName('logEntry', isToday(entry.date) ? entry.type : '', isSameEntry(selectedEntry, entry) ? 'selected' : '')}
-                onClick={() => setSelectedEntry(entry)}
-              >
-                <div>{toFriendlyDate(entry.date)} - {entry.message}</div>
-
-                {hasStacktraces(entry) &&
-                  <div className="stackTraceButton">
-                    <img src={StacktraceIcon} width={40} height={40}/>
-                  </div>
-                }
-              </div>
-            ))}
-          </div>
         </div>
       </div>
     </div>
