@@ -9,13 +9,13 @@ import CopyIcon from '../assets/copy.png';
 import RemoveIcon from '../assets/remove.png';
 import ClearIcon from '../assets/clear.png';
 import EmptyIcon from '../assets/empty.png';
+import RefreshIcon from '../assets/refresh.png';
 import DebouncedSearch from './DebouncedSearch';
 import { isToday, toFriendlyDate } from '../utils/date';
 
 function App() {
   const scrollRef = useRef(null);
-  const [logPath, setLogPath] = useState(null);
-  const [originalLogData, setOriginalLogData] = useState([]);
+  const [originalLogData, setOriginalLogData] = useState({ path: null, entries: [] });
   const [logData, setLogData] = useState([]);
   const [selectedEntry, setSelectedEntry] = useState(null);
   const [statusMessage, setStatusMessage] = useState(null);
@@ -23,12 +23,11 @@ function App() {
 
   useEffect(() => {
     ipcRenderer.on('log-update', (event, { logPath, logEntries }) => {
-      setOriginalLogData((prevData) => [...prevData, ...logEntries]);
-      setLogPath(logPath);
+      setOriginalLogData((prevData) => ({ path: logPath, entries: [...prevData.entries, ...logEntries] }));
     });
 
-    ipcRenderer.on('log-reset', () => {
-      setOriginalLogData([]);
+    ipcRenderer.on('log-reset', (event, { logPath }) => {
+      setOriginalLogData({ path: logPath, entries: [] });
       setLogData([]);
       setSelectedEntry(null);
     });
@@ -61,8 +60,8 @@ function App() {
   }, []);
 
   useEffect(() => {
-    setLogData(originalLogData);
-  }, [originalLogData]);
+    setLogData(originalLogData.entries);
+  }, [originalLogData.entries]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -74,15 +73,15 @@ function App() {
     setSelectedEntry(null);
 
     if (value === '') {
-      setLogData(originalLogData);
+      setLogData(originalLogData.entries);
       return;
     }
-    const filtered = originalLogData.filter((entry) => {
+    const filtered = originalLogData.entries.filter((entry) => {
       return entry.message.toLowerCase().includes(value.toLowerCase())
         || entry.stacktrace.join('').toLowerCase().includes(value.toLowerCase());
     });
     setLogData(filtered);
-  }, [originalLogData]);
+  }, [originalLogData.entries]);
 
   const openFileInVSCode = useCallback(({ fileName, lineNumber }) => {
     if (!fileName || !lineNumber) {
@@ -91,19 +90,9 @@ function App() {
     ipcRenderer.send('open-file-in-vscode', { fileName, lineNumber });
   }, []);
 
-  const clearLogs = useCallback(() => {
-    setOriginalLogData([]);
-    setLogData([]);
-    setSelectedEntry(null);
-  }, []);
-
   const showStatusMessage = useCallback((message) => {
     setStatusMessage(message);
     setTimeout(() => setStatusMessage(null), 2000);
-  }, []);
-
-  const removeLogEntry = useCallback((entry) => {
-    setOriginalLogData((prevData) => prevData.filter((e) => e.id !== entry.id));
   }, []);
 
   const isSameEntry = useCallback((entry1, entry2) => {
@@ -114,41 +103,73 @@ function App() {
 
   const generateClassName = useCallback((...args) => args.filter((v) => v !== '').join(' '), []);
 
-  const showStackTrace = selectedEntry && !!selectedEntry.stacktrace?.length;
-
   return (
     <div className="window">
       {/* <div className="aside"> Add sidebar content here </div> */}
       <div className="main">
         <div className="actionBar">
           <div className='actions'>
+
             <label className="label">Nyao Error Logs</label>
-            <button onClick={() => ipcRenderer.send('open-file-dialog')} className="iconButton">
+
+            <button className="iconButton" onClick={() => ipcRenderer.send('open-file-dialog')}>
               <img src={FileIcon} width={30} height={30} />
             </button>
-            <button onClick={() => {
-              clipboard.writeText(selectedEntry.message);
-              showStatusMessage('Copied to clipboard!');
-            }} className="iconButton" disabled={selectedEntry === null}>
+
+            <button className="iconButton"
+              onClick={() => {
+                ipcRenderer.send('watch-another-file', originalLogData.path);
+                showStatusMessage('Refreshed!');
+              }}
+            >
+              <img src={RefreshIcon} width={30} height={30} />
+            </button>
+
+            <button className="iconButton" disabled={selectedEntry === null}
+              onClick={() => {
+                clipboard.writeText(selectedEntry.message);
+                showStatusMessage('Copied to clipboard!');
+              }}
+            >
               <img src={CopyIcon} width={30} height={30} />
             </button>
-            <button onClick={() => removeLogEntry(selectedEntry)} className="iconButton" disabled={selectedEntry === null}>
+
+            <button className="iconButton" disabled={selectedEntry === null}
+              onClick={() => {
+                setOriginalLogData((prevData) => ({
+                  ...prevData,
+                  entries: prevData.entries.filter((e) => e.id !== selectedEntry.id)
+                }));
+              }}
+            >
               <img src={RemoveIcon} width={30} height={30} />
             </button>
-            <button onClick={clearLogs} className="iconButton">
+
+            <button className="iconButton"
+              onClick={() => {
+                setOriginalLogData({ ...originalLogData, entries: [] });
+                setLogData([]);
+                setSelectedEntry(null);
+              }}
+            >
               <img src={ClearIcon} width={30} height={30} />
             </button>
+
             <button className="iconButton"
               onClick={() => {
                 if (confirm('Are you sure to clear all logs? It will delete the all log entries from the actual file. This action cannot be undone.')) {
-                  setOriginalLogData([]);
-                  ipcRenderer.send('empty-file', logPath);
+                  setOriginalLogData({ ...originalLogData, entries: [] });
+                  ipcRenderer.send('empty-file', originalLogData.path);
                 }
               }}
             >
               <img src={EmptyIcon} width={30} height={30} />
             </button>
-            <div className={generateClassName('statusMessage', statusMessage !== null ? 'show' : 'hide')}>{statusMessage}</div>
+
+            <div className={generateClassName('statusMessage', statusMessage !== null ? 'show' : 'hide')}>
+              {statusMessage}
+            </div>
+
           </div>
         </div>
         <div ref={scrollRef} className={generateClassName('content', 'scrollable', showModal ? 'lock' : '')}>

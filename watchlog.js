@@ -33,7 +33,7 @@ async function watchLogFile( mainWindow, logPath, reset = false ) {
 
   if ( reset ) {
     startProcessPosition = 0;
-    mainWindow.webContents.send( 'log-reset' );
+    mainWindow.webContents.send( 'log-reset', { logPath } );
   }
 
   // Stop watching the previous file if there is an existing watcher
