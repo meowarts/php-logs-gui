@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
-import CloseImage from '../assets/close.svg';
+import RemoveIcon from '../assets/remove.png';
 
 const useDebounce = (value, delay) => {
   const [debouncedValue, setDebouncedValue] = useState(value);
@@ -36,9 +36,9 @@ const DebouncedSearch = ({ onSearch, delay = 300, ...rest }) => {
         onChange={handleChange}
         {...rest}
       />
-      <div className={`closeButton ${searchTerm.length === 0 ? 'hidden' : '' }`} onClick={() => setSearchTerm('')}>
-        <img src={CloseImage} alt="Clear search" width={15} height={15} />
-      </div>
+      <button className={`closeButton ${searchTerm.length === 0 ? 'hidden' : '' }`} onClick={() => setSearchTerm('')}>
+        <img src={RemoveIcon} alt="Clear search" width={20} height={20} />
+      </button>
     </div>
   );
 };

@@ -150,7 +150,6 @@ function App() {
             </button>
             <div className={generateClassName('statusMessage', statusMessage !== null ? 'show' : 'hide')}>{statusMessage}</div>
           </div>
-          <DebouncedSearch className="searchTextField" placeholder="Search" onSearch={filteredData} />
         </div>
         <div ref={scrollRef} className={generateClassName('content', 'scrollable', showModal ? 'lock' : '')}>
           <div className="logsContainer">
@@ -195,6 +194,9 @@ function App() {
             <div className='closeButton clickable' onClick={() => setShowModal(false)}>Close</div>
           </div>
 
+        </div>
+        <div className='footer'>
+          <DebouncedSearch className="searchTextField" placeholder="Search" onSearch={filteredData} />
         </div>
       </div>
     </div>
