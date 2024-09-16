@@ -113,8 +113,17 @@ body .content.lock {
 }
 
 body .content .logsContainer {
-  flex: auto;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   padding: 10px 16px;
+}
+
+body .content .logsContainer.loading {
+  align-items: center;
+  justify-content: center;
+  height: 100%;
 }
 
 body .content .logsContainer h1 {
@@ -130,7 +139,6 @@ body .content .logsContainer .logEntry {
   display: flex;
   flex-direction: row;
   gap: 4px;
-  margin-bottom: 16px;
   padding: 10px;
   word-break: break-all;
 }
@@ -264,4 +272,24 @@ body .stackTraceContent .stackTrace .file.openable {
 
 body .stackTraceContent .stackTrace .detail {
   color: #fff;
+}
+
+body .loader {
+  width: 48px;
+  height: 48px;
+  border: 5px solid #FFF;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

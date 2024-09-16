@@ -20,13 +20,16 @@ function App() {
   const [selectedEntry, setSelectedEntry] = useState(null);
   const [statusMessage, setStatusMessage] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     ipcRenderer.on('log-update', (event, { logPath, logEntries }) => {
       setOriginalLogData((prevData) => ({ path: logPath, entries: [...prevData.entries, ...logEntries] }));
+      setIsLoading(false);
     });
 
     ipcRenderer.on('log-reset', (event, { logPath }) => {
+      setIsLoading(true);
       setOriginalLogData({ path: logPath, entries: [] });
       setLogData([]);
       setSelectedEntry(null);
@@ -173,11 +176,13 @@ function App() {
           </div>
         </div>
         <div ref={scrollRef} className={generateClassName('content', 'scrollable', showModal ? 'lock' : '')}>
-          <div className="logsContainer">
+          <div className={generateClassName('logsContainer', isLoading ? 'loading' : '')}>
 
-            {logData.length === 0 && <div className="emptyLogs">
-              <div>No logs found.</div>
-            </div>}
+            {logData.length === 0 && (
+              isLoading
+                ? <span className="loader"></span>
+                : <div className="emptyLogs"><div>No logs found.</div></div>
+            )}
 
             {logData.map((entry) => (
               <div key={entry.id}
