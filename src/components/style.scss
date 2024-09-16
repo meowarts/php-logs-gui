@@ -259,6 +259,12 @@ body {
       gap: 2px;
       margin-bottom: 16px;
 
+      .fileContainer {
+        display: flex;
+        flex-direction: row;
+        gap: 4px;
+      }
+
       .file {
         color: #4aed60;
         text-decoration: underline;

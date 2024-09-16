@@ -261,6 +261,12 @@ body .stackTraceContent .stackTrace {
   margin-bottom: 16px;
 }
 
+body .stackTraceContent .stackTrace .fileContainer {
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+}
+
 body .stackTraceContent .stackTrace .file {
   color: #4aed60;
   text-decoration: underline;

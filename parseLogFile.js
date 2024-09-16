@@ -39,19 +39,19 @@ function getLogType( message ) {
 /**
  * Parses a stack trace line.
  * @param {string} stacktrace
- * @returns {object} - The parsed stack trace line, with 'file' and 'detail' properties.
+ * @returns {object} - The parsed stack trace line, with 'index', 'detail', 'fileName' and 'lineNumber' properties.
  */
 function parseStacktrace( stacktrace ) {
   const match = stacktrace.match(/^(#\d+)\s+(.*?)\((\d+)\):\s+(.*)$/);
   return match
     ? {
-        file: `${match[1]} ${match[2]}(${match[3]})`,
+        index: match[1],
         detail: match[4],
         fileName: match[2],
         lineNumber: match[3],
       }
     : {
-        file: null,
+        index: null,
         detail: stacktrace.trim(),
         fileName: null,
         lineNumber: null,

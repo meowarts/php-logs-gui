@@ -210,9 +210,15 @@ function App() {
           {/* Modal */}
           <div className={generateClassName('modal', showModal ? 'show' : 'hide')}>
             <div className='stackTraceContent'>
-              {selectedEntry?.stacktrace.map(({ file, detail, fileName, lineNumber}, index) => (
+              {selectedEntry?.stacktrace.map(({ detail, fileName, lineNumber, index}) => (
                 <div className='stackTrace' key={`${selectedEntry.id}-stacktrace-${index}`}>
-                  <div className={generateClassName('file', file ? 'openable' : '')} onClick={() => openFileInVSCode({ fileName,  lineNumber })}>{file}</div>
+                  <div className='fileContainer' onClick={() => openFileInVSCode({ fileName,  lineNumber })}>
+                    <span>{index}</span>
+                    <div>
+                      <span className='file openable'>{fileName}</span>
+                      <span>({lineNumber})</span>
+                    </div>
+                  </div>
                   <div className='detail'>{detail}</div>
                 </div>
               ))}
