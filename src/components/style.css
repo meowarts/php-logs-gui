@@ -81,13 +81,13 @@ body .actionBar .button:hover {
 body .actionBar .iconButton {
   align-items: center;
   background-color: transparent;
-  border-radius: 45px;
+  border-radius: 36px;
   border-width: 0;
   cursor: pointer;
   display: flex;
-  height: 45px;
+  height: 36px;
   justify-content: center;
-  width: 45px;
+  width: 36px;
 }
 
 body .actionBar .iconButton:hover {

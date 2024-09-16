@@ -13,6 +13,8 @@ import RefreshIcon from '../assets/refresh.png';
 import DebouncedSearch from './DebouncedSearch';
 import { isToday, toFriendlyDate } from '../utils/date';
 
+const menuIconSize = 16;
+
 function App() {
   const scrollRef = useRef(null);
   const [originalLogData, setOriginalLogData] = useState({ path: null, entries: [] });
@@ -116,7 +118,7 @@ function App() {
             <label className="label">Nyao Error Logs</label>
 
             <button className="iconButton" onClick={() => ipcRenderer.send('open-file-dialog')}>
-              <img src={FileIcon} width={30} height={30} />
+              <img src={FileIcon} width={menuIconSize} height={menuIconSize} />
             </button>
 
             <button className="iconButton"
@@ -125,7 +127,7 @@ function App() {
                 showStatusMessage('Refreshed!');
               }}
             >
-              <img src={RefreshIcon} width={30} height={30} />
+              <img src={RefreshIcon} width={menuIconSize} height={menuIconSize} />
             </button>
 
             <button className="iconButton" disabled={selectedEntry === null}
@@ -134,7 +136,7 @@ function App() {
                 showStatusMessage('Copied to clipboard!');
               }}
             >
-              <img src={CopyIcon} width={30} height={30} />
+              <img src={CopyIcon} width={menuIconSize} height={menuIconSize} />
             </button>
 
             <button className="iconButton" disabled={selectedEntry === null}
@@ -145,7 +147,7 @@ function App() {
                 }));
               }}
             >
-              <img src={RemoveIcon} width={30} height={30} />
+              <img src={RemoveIcon} width={menuIconSize} height={menuIconSize} />
             </button>
 
             <button className="iconButton"
@@ -155,7 +157,7 @@ function App() {
                 setSelectedEntry(null);
               }}
             >
-              <img src={ClearIcon} width={30} height={30} />
+              <img src={ClearIcon} width={menuIconSize} height={menuIconSize} />
             </button>
 
             <button className="iconButton"
@@ -166,7 +168,7 @@ function App() {
                 }
               }}
             >
-              <img src={EmptyIcon} width={30} height={30} />
+              <img src={EmptyIcon} width={menuIconSize} height={menuIconSize} />
             </button>
 
             <div className={generateClassName('statusMessage', statusMessage !== null ? 'show' : 'hide')}>
