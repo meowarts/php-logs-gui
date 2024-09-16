@@ -48,7 +48,7 @@ function App() {
 
     const handleKeyDown = (event) => {
       if (event.key === 'Escape') {
-        setSelectedEntry(null);
+        setShowModal(false);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
