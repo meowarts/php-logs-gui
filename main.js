@@ -7,6 +7,7 @@ const url = require('url');
 const { watchLogFile } = require('./watchlog');
 const { exec } = require('child_process');
 const fs = require('fs');
+const logger = require('./logger');
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 const iconPath = path.join(__dirname, 'src', 'assets', 'icon.png'); // Icon path for both tray and main window
@@ -188,10 +189,10 @@ ipcMain.on( 'watch-another-file', async ( event, logPath ) => {
 ipcMain.on( 'open-file-in-vscode', ( event, { fileName, lineNumber } ) => {
   exec( `code -g ${fileName}:${lineNumber}`, ( error, stdout, stderr ) => {
     if (error) {
-      console.error(`error: ${error}`);
+      logger.error(`error: ${error}`);
     }
     if (stderr) {
-      console.error(`stderr: ${stderr}`);
+      logger.error(`stderr: ${stderr}`);
     }
   });
 });
