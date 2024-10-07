@@ -16,7 +16,8 @@
     "prod": "cross-env NODE_ENV=production webpack --mode production --config webpack.build.config.js && electron --noDevServer .",
     "start": "cross-env NODE_ENV=development webpack serve --hot --host 0.0.0.0 --config=./webpack.dev.config.js --mode development",
     "build": "cross-env NODE_ENV=production webpack --config webpack.build.config.js --mode production && npm run postpackage",
-    "postpackage": "electron-packager ./ --out=./builds --icon=./src/assets/icon.icns --overwrite --ignore=^/logs"
+    "postpackage": "electron-packager ./ --out=./builds --icon=./src/assets/icon.icns --overwrite --ignore=^/logs",
+    "test": "npx playwright test"
   },
   "dependencies": {
     "postcss": "^8.4.38",
@@ -30,7 +31,9 @@
     "@babel/preset-env": "^7.24.5",
     "@babel/preset-react": "^7.24.1",
     "@electron/packager": "^18.3.2",
+    "@playwright/test": "^1.47.2",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.13",
+    "@types/node": "^22.7.4",
     "babel-loader": "^8.2.5",
     "cross-env": "^7.0.3",
     "css-loader": "^6.7.1",
