@@ -13,7 +13,7 @@ import RefreshIcon from '../assets/refresh.png';
 import DebouncedSearch from './DebouncedSearch';
 import { isToday, toFriendlyDate } from '../utils/date';
 
-const menuIconSize = 16;
+const menuIconSize = 24;
 
 function App() {
   const scrollRef = useRef(null);
