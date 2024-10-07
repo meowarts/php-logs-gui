@@ -11,6 +11,7 @@ const logger = require('./logger');
 const servicePath = require('./servicePath');
 
 const isDevelopment = process.env.NODE_ENV === 'development';
+const isTesting = process.env.TESTING === 'true';
 const iconPath = path.join(__dirname, 'src', 'assets', 'icon.png'); // Icon path for both tray and main window
 
 let tray = null;
@@ -58,7 +59,7 @@ function createWindow() {
     trafficLightPosition: { x: 20, y: 23.5 }
   });
 
-  const indexPath = isDevelopment ?
+  const indexPath = isDevelopment || isTesting ?
     url.format({
       protocol: 'http:',
       host: 'localhost:8080',
@@ -76,7 +77,9 @@ function createWindow() {
   mainWindow.once('ready-to-show', async () => {
     mainWindow.setTitle('Nyao PHP Errors');
     mainWindow.show();
-    const logPath = path.join(app.getPath('home'), 'sites', 'ai', 'logs', 'php', 'error.log');
+    const logPath = isTesting
+      ? path.join(__dirname, 'tests', 'logs', 'error.log')
+      : path.join(app.getPath('home'), 'sites', 'ai', 'logs', 'php', 'error.log');
     await watchLogFile(mainWindow, logPath);
     if (isDevelopment) {
       mainWindow.webContents.openDevTools();
