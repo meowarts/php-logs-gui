@@ -37,12 +37,12 @@ function getLogType( message ) {
 }
 
 /**
- * Parses a stack trace line.
- * @param {string} stacktrace
+ * Parses a stack trace line which is starting the index number.
+ * @param {string} stackTraceLine
  * @returns {object} - The parsed stack trace line, with 'index', 'detail', 'fileName' and 'lineNumber' properties.
  */
-function parseStacktrace( stacktrace ) {
-  const match = stacktrace.match(/^(#\d+)\s+(.*?)\((\d+)\):\s+(.*)$/);
+function parseStackTraceLineWithStartIndex ( stackTraceLine ) {
+  const match = stackTraceLine.match(/^(#\d+)\s+(.*?)\((\d+)\):\s+(.*)$/);
   return match
     ? {
         index: match[1],
@@ -52,7 +52,29 @@ function parseStacktrace( stacktrace ) {
       }
     : {
         index: null,
-        detail: stacktrace.trim(),
+        detail: stackTraceLine.trim(),
+        fileName: null,
+        lineNumber: null,
+      };
+}
+
+/**
+ * Parses a stack trace line which is starting the 'PHP /d'.
+ * @param {string} stackTraceLine
+ * @returns {object} - The parsed stack trace line, with 'index', 'detail', 'fileName' and 'lineNumber' properties.
+ */
+function parseStackTraceLineWithStartPHP( stackTraceLine ) {
+  const match = stackTraceLine.match(/PHP\s+(\d+)\.\s+(.+?)\s+(\/[^\s]+\.php)\s+.*?(\d+)/);
+  return match
+    ? {
+        index: `#${match[1]}`,
+        detail: match[2],
+        fileName: match[3],
+        lineNumber: match[4],
+      }
+    : {
+        index: null,
+        detail: stackTraceLine.trim(),
         fileName: null,
         lineNumber: null,
       };
@@ -97,8 +119,8 @@ function parseLogFile({ logPath, streamOptions = {} }) {
 
         if ( capturingStacktrace ) {
           if ( line.includes( 'PHP ' ) && line.match( /PHP\s+\d+\./ ) ) {
-            // Stack trace line
-            currentEntry.stacktrace.push( parseStacktrace(line) );
+            // Pass the line without the date to the stack trace parser
+            currentEntry.stacktrace.push( parseStackTraceLineWithStartPHP(message) );
           } else {
             // New log entry, end of stack trace
             capturingStacktrace = false;
@@ -111,12 +133,13 @@ function parseLogFile({ logPath, streamOptions = {} }) {
         } else {
           // New log entry. Push the current entry to the log entries array if content exists.
           if ( currentEntry.message || currentEntry.stacktrace.length > 0 ) {
+            capturingStacktrace = false;
             logEntries.push( currentEntry );
           }
           currentEntry = initializeEntry({ date, type, message });
         }
       } else if ( capturingStacktrace ) {
-        currentEntry.stacktrace.push( parseStacktrace(line) );
+        currentEntry.stacktrace.push( parseStackTraceLineWithStartIndex(line) );
       } else if ( line.includes( 'Stack trace:' ) ) {
         capturingStacktrace = true;
       } else {
