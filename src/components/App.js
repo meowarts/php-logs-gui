@@ -124,7 +124,6 @@ function App() {
             <button className="iconButton"
               onClick={() => {
                 ipcRenderer.send('watch-another-file', originalLogData.path);
-                showStatusMessage('Refreshed!');
               }}
             >
               <img src={RefreshIcon} width={menuIconSize} height={menuIconSize} />
