@@ -14,7 +14,7 @@ let debounceTimeout = null;
  * @param {Array} options.logEntries - The log entries to send.
  */
 function callLogUpdate({ mainWindow, logPath, logEntries }) {
-  if ( mainWindow && !mainWindow.isDestroyed() && logEntries.length > 0 ) {
+  if ( mainWindow && !mainWindow.isDestroyed() ) {
     mainWindow.webContents.send( 'log-update', { logPath, logEntries } );
   }
 }
