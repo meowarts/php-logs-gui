@@ -11,7 +11,7 @@ import ClearIcon from '../assets/clear.png';
 import EmptyIcon from '../assets/empty.png';
 import RefreshIcon from '../assets/refresh.png';
 import DebouncedSearch from './DebouncedSearch';
-import { isToday, toFriendlyDate } from '../utils/date';
+import { toFriendlyDate } from '../utils/date';
 
 const menuIconSize = 24;
 
@@ -187,7 +187,7 @@ function App() {
 
             {logData.map((entry) => (
               <div key={entry.id}
-                className={generateClassName('logEntry', isToday(entry.date) ? entry.type : '', isSameEntry(selectedEntry, entry) ? 'selected' : '')}
+                className={generateClassName('logEntry', entry.type, isSameEntry(selectedEntry, entry) ? 'selected' : '')}
                 onClick={() => {
                   setShowModal(false);
                   setSelectedEntry(entry);
