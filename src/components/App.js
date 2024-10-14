@@ -74,6 +74,12 @@ function App() {
     }
   }, [logData]);
 
+  useEffect(() => {
+    if (!selectedEntry) {
+      setShowModal(false);
+    }
+  }, [selectedEntry]);
+
   const filteredData = useCallback((value) => {
     setSelectedEntry(null);
 
