@@ -238,13 +238,20 @@ body .modal.show {
 }
 
 body .modal .closeButton {
-  background-color: #535353;
-  border: 2px solid #fff;
-  border-radius: 20px;
+  align-items: center;
+  background-color: #333;
+  border-radius: 24px;
   cursor: pointer;
-  margin: 10px;
-  padding: 20px;
-  text-align: center;
+  display: flex;
+  font-weight: bold;
+  font-size: 16px;
+  height: 16px;
+  justify-content: center;
+  padding: 4px;
+  position: absolute;
+  right: 4px;
+  top: 4px;
+  width: 16px;
 }
 
 body .stackTraceContent {

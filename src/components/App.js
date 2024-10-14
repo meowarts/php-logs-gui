@@ -230,7 +230,7 @@ function App() {
                 </div>
               ))}
             </div>
-            <div className='closeButton clickable' onClick={() => setShowModal(false)}>Close</div>
+            <div className='closeButton clickable' onClick={() => setShowModal(false)}>✕</div>
           </div>
 
         </div>
