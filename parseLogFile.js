@@ -64,7 +64,7 @@ function parseStackTraceLineWithStartIndex ( stackTraceLine ) {
  * @returns {object} - The parsed stack trace line, with 'index', 'detail', 'fileName' and 'lineNumber' properties.
  */
 function parseStackTraceLineWithStartPHP( stackTraceLine ) {
-  const match = stackTraceLine.match(/PHP\s+(\d+)\.\s+(.+?)\s+(\/[^\s]+\.php)\s+.*?(\d+)/);
+  const match = stackTraceLine.match(/PHP\s+(\d+)\.\s+(.+?)\s+([\/\w\s\.-]+\.php)\D+(\d+)/);
   return match
     ? {
         index: `#${match[1]}`,
