@@ -42,20 +42,15 @@ function getLogType( message ) {
  * @returns {object} - The parsed stack trace line, with 'index', 'detail', 'fileName' and 'lineNumber' properties.
  */
 function parseStackTraceLineWithStartIndex ( stackTraceLine ) {
-  const match = stackTraceLine.match(/^(#\d+)\s+(.*?)\((\d+)\):\s+(.*)$/);
+  const match = stackTraceLine.match(/^(#\d+)\s+(?:(\{main\})\s+thrown in\s+([^(]+?)(?:\s+on line\s+(\d+)|\((\d+)\))?$|([^(]+)\((\d+)\):\s*(.*)$)/);
   return match
     ? {
         index: match[1],
-        detail: match[4],
-        fileName: match[2],
-        lineNumber: match[3],
+        detail: match[8] || match[2],
+        fileName: match[6] || match[3],
+        lineNumber: match[7] || match[4] || match[5],
       }
-    : {
-        index: null,
-        detail: stackTraceLine.trim(),
-        fileName: null,
-        lineNumber: null,
-      };
+    : null;
 }
 
 /**
@@ -105,6 +100,7 @@ function parseLogFile({ logPath, streamOptions = {} }) {
     const logEntries = [];
     let currentEntry = initializeEntry({ date: null, type: 'notice', message: ''});
     let capturingStacktrace = false;
+    let previousStackTrace = null;
 
     rl.on( 'line', ( line ) => {
       if ( line.includes( 'Xdebug: [Step Debug] Could not connect to debugging client.' ) ) {
@@ -124,6 +120,7 @@ function parseLogFile({ logPath, streamOptions = {} }) {
           } else {
             // New log entry, end of stack trace
             capturingStacktrace = false;
+            previousStackTrace = null;
             logEntries.push( currentEntry );
             currentEntry = initializeEntry({ date, type, message });
           }
@@ -134,12 +131,21 @@ function parseLogFile({ logPath, streamOptions = {} }) {
           // New log entry. Push the current entry to the log entries array if content exists.
           if ( currentEntry.message || currentEntry.stacktrace.length > 0 ) {
             capturingStacktrace = false;
+            previousStackTrace = null;
             logEntries.push( currentEntry );
           }
           currentEntry = initializeEntry({ date, type, message });
         }
       } else if ( capturingStacktrace ) {
-        currentEntry.stacktrace.push( parseStackTraceLineWithStartIndex(line) );
+        const stackTrace = parseStackTraceLineWithStartIndex(
+          previousStackTrace ? `${previousStackTrace} ${line}` : line
+        );
+        if (stackTrace === null) {
+          previousStackTrace = line;
+        } else {
+          currentEntry.stacktrace.push( stackTrace );
+          previousStackTrace = null;
+        }
       } else if ( line.includes( 'Stack trace:' ) ) {
         capturingStacktrace = true;
       } else {

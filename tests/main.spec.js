@@ -79,14 +79,29 @@ test.describe('Parse a log file', () => {
       await expect(window.getByText(`PHP Warning: Undefined array key "EXAMPLE_KEY" in /Users/path/to/test.php on line 36`)).toBeVisible();
     });
 
-    test('Set `warning` class name', async () => {
+    test('Set the `warning` class name', async () => {
       const logContainer = await window.locator('.warning');
       await expect(logContainer).toBeVisible();
     });
 
-    test('Show stack trace button', async () => {
+    test('Show the stack trace button', async () => {
       const logContainer = await window.locator('.stackTraceButton');
       await expect(logContainer).toBeVisible()
+    });
+
+    test('Show the modal for the stack trace', async () => {
+      const logContainer = await window.locator('.stackTraceButton');
+      await logContainer.click();
+      const modal = await window.locator('.modal');
+      await expect(modal).toBeVisible();
+    });
+
+    test('Show all stack traces\' info in the modal', async () => {
+      const logContainer = await window.locator('.stackTraceButton');
+      await logContainer.click();
+      const modal = await window.locator('.modal');
+      const stackTraces = await modal.locator('.stackTrace');
+      await expect(stackTraces).toHaveCount(8);
     });
   });
 
@@ -112,14 +127,29 @@ test.describe('Parse a log file', () => {
       await expect(window.getByText(`PHP Fatal error: Cannot redeclare test_function() (previously declared in /Users/path/to/test/Local Sites/test/app/public/wp-content/mu-plugins/test.php:8) in /Users/path/to/test/plugins/test-exit-intent/demo.php on line 48`)).toBeVisible();
     });
 
-    test('Set `error` class name', async () => {
+    test('Set the `error` class name', async () => {
       const logContainer = await window.locator('.error');
       await expect(logContainer).toBeVisible();
     });
 
-    test('Show stack trace button', async () => {
+    test('Show the stack trace button', async () => {
       const logContainer = await window.locator('.stackTraceButton');
       await expect(logContainer).toBeVisible()
+    });
+
+    test('Show the modal for the stack trace', async () => {
+      const logContainer = await window.locator('.stackTraceButton');
+      await logContainer.click();
+      const modal = await window.locator('.modal');
+      await expect(modal).toBeVisible();
+    });
+
+    test('Show all stack traces\' info in the modal', async () => {
+      const logContainer = await window.locator('.stackTraceButton');
+      await logContainer.click();
+      const modal = await window.locator('.modal');
+      const stackTraces = await modal.locator('.stackTrace');
+      await expect(stackTraces).toHaveCount(9);
     });
   });
 
@@ -150,14 +180,29 @@ Stack trace:
       await expect(window.getByText(`PHP Fatal error: Uncaught Error: Typed property TEST_PROPERTY::$name must not be accessed before initialization in /Users/path/to/test/plugins/sample/classes/queries/function.php:132`)).toBeVisible();
     });
 
-    test('Set `error` class name', async () => {
+    test('Set the `error` class name', async () => {
       const logContainer = await window.locator('.error');
       await expect(logContainer).toBeVisible();
     });
 
-    test('Show stack trace button', async () => {
+    test('Show the stack trace button', async () => {
       const logContainer = await window.locator('.stackTraceButton');
       await expect(logContainer).toBeVisible()
+    });
+
+    test('Show the modal for the stack trace', async () => {
+      const logContainer = await window.locator('.stackTraceButton');
+      await logContainer.click();
+      const modal = await window.locator('.modal');
+      await expect(modal).toBeVisible();
+    });
+
+    test('Show all stack traces\' info in the modal', async () => {
+      const logContainer = await window.locator('.stackTraceButton');
+      await logContainer.click();
+      const modal = await window.locator('.modal');
+      const stackTraces = await modal.locator('.stackTrace');
+      await expect(stackTraces).toHaveCount(13);
     });
   });
 });
